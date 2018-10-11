@@ -1,4 +1,5 @@
 dependencies {
+    compile project(':neon-api')
     compile "me.tassu.util:core:${project.rootProject.ext.utilVersion}"
     compile "me.tassu.util:config:${project.rootProject.ext.utilVersion}"
 

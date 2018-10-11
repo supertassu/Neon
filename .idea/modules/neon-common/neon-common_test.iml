@@ -10,6 +10,7 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="neon-common_main" />
+    <orderEntry type="module" module-name="neon-api_main" />
     <orderEntry type="library" name="Gradle: me.tassu.util:config:1.0.01" level="project" />
     <orderEntry type="library" name="Gradle: me.tassu.util:core:1.0.01" level="project" />
     <orderEntry type="library" name="Gradle: org.mariadb.jdbc:mariadb-java-client:2.1.2" level="project" />

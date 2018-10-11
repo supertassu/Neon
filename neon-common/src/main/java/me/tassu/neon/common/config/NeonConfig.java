@@ -27,7 +27,6 @@ package me.tassu.neon.common.config;
 
 import com.google.inject.Inject;
 import lombok.Getter;
-import lombok.NonNull;
 import me.tassu.neon.common.db.StorageConfig;
 import me.tassu.util.config.AbstractConfig;
 import me.tassu.util.config.ConfigFactory;
@@ -35,6 +34,7 @@ import ninja.leaping.configurate.objectmapping.ObjectMapper;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 public class NeonConfig extends AbstractConfig<NeonConfig> {
 

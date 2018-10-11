@@ -23,28 +23,33 @@
  * SOFTWARE.
  */
 
-package me.tassu.neon.spigot;
+package me.tassu.neon.api.user;
 
-import com.google.inject.Inject;
-import me.tassu.neon.common.plugin.NeonPlugin;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
-import java.io.InputStream;
+import java.util.UUID;
 
-public final class NSpigotPlugin extends NeonPlugin {
+/**
+ * Represents an user who may apply punishments to other users.
+ */
+public interface User {
 
-    @Inject private NSpigotBootstrap plugin;
+    /**
+     * Gets the users unique ID
+     *
+     * @return the users Mojang assigned unique id
+     */
+    @NonNull
+    UUID getUuid();
 
-    public NSpigotPlugin(@NonNull NSpigotBootstrap bootstrap) {
-        super(bootstrap);
+    /**
+     * Gets the users username
+     *
+     * <p>Returns null if no username is known for the user.</p>
+     *
+     * @return the users username
+     */
+    @Nullable String getName();
 
-        if (plugin == null) {
-            throw new IllegalStateException("injection failed");
-        }
-    }
-
-    @Override
-    public InputStream getResourceStream(String path) {
-        return plugin.getResource(path);
-    }
 }

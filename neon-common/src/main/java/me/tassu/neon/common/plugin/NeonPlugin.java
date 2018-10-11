@@ -29,17 +29,16 @@ import com.google.inject.Guice;
 import com.google.inject.Inject;
 import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.NonNull;
 import lombok.val;
 import me.tassu.neon.api.NeonAPI;
 import me.tassu.neon.common.config.NeonConfig;
 import me.tassu.neon.common.db.StorageConnector;
 import me.tassu.neon.common.db.factory.ConnectionFactory;
 import me.tassu.util.ArrayUtil;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.slf4j.Logger;
 
 import java.io.InputStream;
-import java.sql.SQLException;
 
 import static me.tassu.util.ErrorUtil.run;
 

@@ -1,3 +1,3 @@
 rootProject.name = 'neon'
 
-include 'neon-common', 'neon-spigot', 'neon-bungeecord'
+include 'neon-api', 'neon-common', 'neon-spigot', 'neon-bungeecord'

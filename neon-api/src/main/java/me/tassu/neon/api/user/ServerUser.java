@@ -23,7 +23,26 @@
  * SOFTWARE.
  */
 
-package me.tassu.neon.common.user;
+package me.tassu.neon.api.user;
 
-public class User {
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
+
+import java.util.UUID;
+
+/**
+ * Represents the game server as an user.
+ */
+public interface ServerUser extends User {
+
+    @Override
+    default @NonNull UUID getUuid() {
+        return UUID.fromString("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa");
+    }
+
+    @Override
+    @Nullable
+    default String getName() {
+        return "Server";
+    }
 }

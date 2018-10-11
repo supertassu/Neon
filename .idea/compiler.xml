@@ -5,6 +5,8 @@
       <profile default="true" name="Default" enabled="true" />
     </annotationProcessing>
     <bytecodeTargetLevel>
+      <module name="neon-api_main" target="1.8" />
+      <module name="neon-api_test" target="1.8" />
       <module name="neon-bungeecord_main" target="1.8" />
       <module name="neon-bungeecord_test" target="1.8" />
       <module name="neon-common_main" target="1.8" />

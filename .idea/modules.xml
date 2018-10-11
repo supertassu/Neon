@@ -3,6 +3,9 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/neon.iml" filepath="$PROJECT_DIR$/.idea/modules/neon.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/neon-api/neon-api.iml" filepath="$PROJECT_DIR$/.idea/modules/neon-api/neon-api.iml" group="neon-api" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/neon-api/neon-api_main.iml" filepath="$PROJECT_DIR$/.idea/modules/neon-api/neon-api_main.iml" group="neon-api" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/neon-api/neon-api_test.iml" filepath="$PROJECT_DIR$/.idea/modules/neon-api/neon-api_test.iml" group="neon-api" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/neon-bungeecord/neon-bungeecord.iml" filepath="$PROJECT_DIR$/.idea/modules/neon-bungeecord/neon-bungeecord.iml" group="neon-bungeecord" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/neon-bungeecord/neon-bungeecord_main.iml" filepath="$PROJECT_DIR$/.idea/modules/neon-bungeecord/neon-bungeecord_main.iml" group="neon-bungeecord" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/neon-bungeecord/neon-bungeecord_test.iml" filepath="$PROJECT_DIR$/.idea/modules/neon-bungeecord/neon-bungeecord_test.iml" group="neon-bungeecord" />

@@ -23,28 +23,19 @@
  * SOFTWARE.
  */
 
-package me.tassu.neon.spigot;
+package me.tassu.neon.api.user;
 
-import com.google.inject.Inject;
-import me.tassu.neon.common.plugin.NeonPlugin;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
-import java.io.InputStream;
+import java.util.UUID;
 
-public final class NSpigotPlugin extends NeonPlugin {
+/**
+ * Provides {@link User}s from the database.
+ */
+public interface UserManager {
 
-    @Inject private NSpigotBootstrap plugin;
+    @Nullable User getUser(@NonNull String name);
+    @NonNull User getUser(@NonNull UUID uuid);
 
-    public NSpigotPlugin(@NonNull NSpigotBootstrap bootstrap) {
-        super(bootstrap);
-
-        if (plugin == null) {
-            throw new IllegalStateException("injection failed");
-        }
-    }
-
-    @Override
-    public InputStream getResourceStream(String path) {
-        return plugin.getResource(path);
-    }
 }
