@@ -1,0 +1,70 @@
+buildscript {
+    repositories {
+        jcenter()
+        maven {
+            url = 'https://plugins.gradle.org/m2'
+        }
+    }
+
+    dependencies {
+        classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.2'
+        classpath 'gradle.plugin.net.minecrell:licenser:0.4.1'
+        classpath "io.franzbecker:gradle-lombok:1.14"
+    }
+}
+
+group = 'me.tassu'
+version = "0.0.01"
+
+ext {
+    utilVersion = '1.0.01'
+}
+
+defaultTasks 'licenseFormat', 'build', 'shadowJar'
+
+subprojects {
+    apply plugin: 'java'
+    apply plugin: 'maven'
+    apply plugin: 'com.github.johnrengelman.shadow'
+    apply plugin: 'net.minecrell.licenser'
+    apply plugin: "io.franzbecker.gradle-lombok"
+
+    group = 'me.tassu.neon'
+    version = rootProject.version
+
+    sourceCompatibility = '1.8'
+    targetCompatibility = '1.8'
+
+    tasks.withType(JavaCompile) {
+        options.encoding = 'UTF-8'
+    }
+
+    jar {
+        from '../LICENSE.txt'
+    }
+
+    license {
+        header = rootProject.file('LICENSE_header.txt')
+        include '**/*.java'
+        newLine = true
+    }
+
+    repositories {
+        //mavenLocal()
+        mavenCentral()
+
+        maven { url = "file:///home/tassu/maven" }
+        maven {
+            url = 'https://maven.tassu.me/'
+            name = 'tassu-repo'
+        }
+        maven {
+            url = 'https://repo.spongepowered.org/maven'
+            name = 'sponge-repo'
+        }
+    }
+
+    shadowJar {
+        archiveName = "neon-spigot-${project.version}.jar"
+    }
+}

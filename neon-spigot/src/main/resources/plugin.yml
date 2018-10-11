@@ -1,0 +1,4 @@
+name: Neon
+version: ${version}
+main: me.tassu.neon.spigot.NSpigotBootstrap
+api-version: 1.13

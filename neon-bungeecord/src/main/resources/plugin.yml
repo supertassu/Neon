@@ -1,0 +1,3 @@
+name: Neon
+version: ${version}
+main: me.tassu.neon.bungee.NBungeeBootstrap

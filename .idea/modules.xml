@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/neon.iml" filepath="$PROJECT_DIR$/.idea/modules/neon.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/neon-bungeecord/neon-bungeecord.iml" filepath="$PROJECT_DIR$/.idea/modules/neon-bungeecord/neon-bungeecord.iml" group="neon-bungeecord" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/neon-bungeecord/neon-bungeecord_main.iml" filepath="$PROJECT_DIR$/.idea/modules/neon-bungeecord/neon-bungeecord_main.iml" group="neon-bungeecord" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/neon-bungeecord/neon-bungeecord_test.iml" filepath="$PROJECT_DIR$/.idea/modules/neon-bungeecord/neon-bungeecord_test.iml" group="neon-bungeecord" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/neon-common/neon-common.iml" filepath="$PROJECT_DIR$/.idea/modules/neon-common/neon-common.iml" group="neon-common" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/neon-common/neon-common_main.iml" filepath="$PROJECT_DIR$/.idea/modules/neon-common/neon-common_main.iml" group="neon-common" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/neon-common/neon-common_test.iml" filepath="$PROJECT_DIR$/.idea/modules/neon-common/neon-common_test.iml" group="neon-common" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/neon-spigot/neon-spigot.iml" filepath="$PROJECT_DIR$/.idea/modules/neon-spigot/neon-spigot.iml" group="neon-spigot" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/neon-spigot/neon-spigot_main.iml" filepath="$PROJECT_DIR$/.idea/modules/neon-spigot/neon-spigot_main.iml" group="neon-spigot" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/neon-spigot/neon-spigot_test.iml" filepath="$PROJECT_DIR$/.idea/modules/neon-spigot/neon-spigot_test.iml" group="neon-spigot" />
+    </modules>
+  </component>
+</project>

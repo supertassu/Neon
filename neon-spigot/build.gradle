@@ -1,0 +1,32 @@
+repositories {
+    maven {
+        name = 'spigotmc-repo'
+        url = 'https://hub.spigotmc.org/nexus/content/groups/public/'
+    }
+    maven {
+        name = 'sonatype'
+        url = 'https://oss.sonatype.org/content/groups/public/'
+    }
+}
+
+
+dependencies {
+    compile project(':neon-common')
+    compile "me.tassu.util:spigot:${project.rootProject.ext.utilVersion}"
+
+    compileOnly 'org.spigotmc:spigot-api:1.13.1-R0.1-SNAPSHOT'
+}
+
+processResources {
+    from(sourceSets.main.resources.srcDirs) {
+        expand 'version': project.rootProject.version
+        include 'plugin.yml'
+    }
+}
+
+shadowJar {
+    relocate 'me.tassu.util', 'me.tassu.neon.util'
+    relocate 'ninja.leaping.configurate', 'me.tassu.neon.lib.configurate'
+    relocate 'com.google', 'me.tassu.neon.lib.google'
+    relocate 'com.typesafe.config', 'me.tassu.neon.lib.typesafe'
+}

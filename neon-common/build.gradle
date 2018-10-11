@@ -1,0 +1,7 @@
+dependencies {
+    compile "me.tassu.util:core:${project.rootProject.ext.utilVersion}"
+    compile "me.tassu.util:config:${project.rootProject.ext.utilVersion}"
+
+    compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25'
+    compile group: 'com.google.inject', name: 'guice', version: '4.2.1'
+}
