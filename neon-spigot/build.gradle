@@ -29,4 +29,5 @@ shadowJar {
     relocate 'ninja.leaping.configurate', 'me.tassu.neon.lib.configurate'
     relocate 'com.google', 'me.tassu.neon.lib.google'
     relocate 'com.typesafe.config', 'me.tassu.neon.lib.typesafe'
+    relocate 'com.zaxxer.hikari', 'me.tassu.neon.lib.hikari'
 }

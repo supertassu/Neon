@@ -27,18 +27,21 @@ package me.tassu.neon.common.config;
 
 import com.google.inject.Inject;
 import lombok.Getter;
+import lombok.NonNull;
+import me.tassu.neon.common.db.StorageConfig;
 import me.tassu.util.config.AbstractConfig;
 import me.tassu.util.config.ConfigFactory;
 import ninja.leaping.configurate.objectmapping.ObjectMapper;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import ninja.leaping.configurate.objectmapping.Setting;
+import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 
 public class NeonConfig extends AbstractConfig<NeonConfig> {
 
     public static final int CONFIG_VERSION = 1;
 
     @Inject
-    public NeonConfig(ConfigFactory factory) {
+    public NeonConfig(@NonNull ConfigFactory factory) {
         // get configuration loader for "neon.conf"
         loader = factory.getLoader("neon.conf");
 
@@ -50,7 +53,17 @@ public class NeonConfig extends AbstractConfig<NeonConfig> {
         }
     }
 
-    @Setting @Getter
+    @SuppressWarnings("WeakerAccess")
+    @ConfigSerializable
+    public static class Config {
+        @Setting("storage") @Getter
+        private StorageConfig storageConfig = new StorageConfig();
+    }
+
+    @Getter @Setting("neon")
+    private Config config = new Config();
+
+    @Setting("config-version") @Getter
     public int configVersion = CONFIG_VERSION;
 
 }

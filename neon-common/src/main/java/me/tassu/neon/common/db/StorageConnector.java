@@ -23,14 +23,36 @@
  * SOFTWARE.
  */
 
-package me.tassu.neon.common.plugin;
+package me.tassu.neon.common.db;
 
-import com.google.inject.AbstractModule;
-import lombok.AllArgsConstructor;
+import com.google.inject.Inject;
+import com.google.inject.Injector;
+import com.google.inject.Singleton;
+import lombok.Getter;
+import me.tassu.neon.common.config.NeonConfig;
+import me.tassu.neon.common.db.factory.ConnectionFactory;
 
-@AllArgsConstructor
-public class InternalModule extends AbstractModule {
+import static me.tassu.util.ErrorUtil.run;
 
-    private final NeonPlugin plugin;
+@Singleton
+public class StorageConnector {
+
+    @Getter private ConnectionFactory factory;
+    @Inject private Injector injector;
+    @Inject private NeonConfig config;
+
+    public void startup() {
+        if (factory != null) throw new IllegalStateException("already connected");
+
+        run(() -> factory = config.getConfig().getStorageConfig().getType()
+                .getConnectionFactory().getConstructor(NeonConfig.class).newInstance(config));
+        injector.injectMembers(factory);
+
+        factory.init();
+    }
+
+    public void teardown() {
+        factory.shutdown();
+    }
 
 }

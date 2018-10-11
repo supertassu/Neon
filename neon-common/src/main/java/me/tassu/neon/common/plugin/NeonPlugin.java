@@ -27,14 +27,19 @@ package me.tassu.neon.common.plugin;
 
 import com.google.inject.Guice;
 import com.google.inject.Inject;
+import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NonNull;
 import lombok.val;
 import me.tassu.neon.api.NeonAPI;
 import me.tassu.neon.common.config.NeonConfig;
+import me.tassu.neon.common.db.StorageConnector;
+import me.tassu.neon.common.db.factory.ConnectionFactory;
 import me.tassu.util.ArrayUtil;
 import org.slf4j.Logger;
 
 import java.io.InputStream;
+import java.sql.SQLException;
 
 import static me.tassu.util.ErrorUtil.run;
 
@@ -44,6 +49,9 @@ public abstract class NeonPlugin {
     @Inject private PlatformInfo platform;
 
     @Inject private NeonConfig config;
+
+    @Inject private StorageConnector connector;
+    @Getter(value = AccessLevel.PRIVATE, lazy = true) private final ConnectionFactory factory = connector.getFactory();
 
     public NeonPlugin(@NonNull NeonBootstrap bootstrap) {
         val injector = Guice.createInjector(ArrayUtil.join(
@@ -74,14 +82,35 @@ public abstract class NeonPlugin {
 
         if (config.getConfigVersion() != NeonConfig.CONFIG_VERSION) {
             logger.error("§4=== §7Unsupported config version §c" + config.getConfigVersion());
-            throw new IllegalStateException("Unsupported config version " + config.getConfigVersion());
+            throw new RuntimeException("Unsupported config version " + config.getConfigVersion());
         }
+
+        logger.info("§4== §7Connecting to database");
+        connector.startup();
+        if (getFactory() == null) {
+            logger.error("§4=== §7Could not connect to database!");
+            throw new RuntimeException("Could not connect to database!");
+        }
+
+        val meta = getFactory().getMeta();
+
+        if (!meta.getOrDefault("Connected", "false").equals("true")) {
+            logger.error("§4=== §7Could not connect to database §c" + getFactory().getImplementationName() + "§7.");
+            logger.error("§4==== §7This may be caused by one of the following: ");
+            logger.error("§4===== §7Your database server is not running");
+            logger.error("§4===== §7You have wrong username or password");
+            logger.error("§4===== §7You have wrong database name or the database does not exist.");
+            throw new RuntimeException("Could not connect to database " + getFactory().getImplementationName());
+        }
+
+        logger.info("§4=== §7Connected to database with ping of §c" + meta.getOrDefault("Ping", "(NaN)") + "§7.");
 
         logger.info("§4= §7Neon should be good to go. Took §c" + (System.currentTimeMillis() - startTime) + "ms§7.");
     }
 
     public final void shutdown() {
-
+        getFactory().shutdown();
+        run(() -> config.save());
     }
 
     /**
