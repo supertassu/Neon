@@ -31,8 +31,45 @@ package me.tassu.neon.common.scheduler;
 public interface Scheduler {
 
     /**
+     * Starts up this scheduler
+     */
+    void boot();
+
+    /**
      * Shuts down this executor instance
      */
     void shutdown();
+
+    /**
+     * Checks if given task is already scheduled.
+     * @param task a task
+     * @return true if given task is scheduled
+     */
+    boolean isScheduled(Task task);
+
+    /**
+     * Schedules given task
+     * @param task a task
+     * @throws IllegalArgumentException when given task is already scheduled
+     */
+    void schedule(Task task);
+
+    /**
+     * Un-schedules a task
+     * @param task a task
+     */
+    void unschedule(Task task);
+
+    /**
+     * Runs given task on the main thread
+     * @param runnable task
+     */
+    void sync(Runnable runnable);
+
+    /**
+     * Runs given task off the main thread
+     * @param runnable task
+     */
+    void async(Runnable runnable);
 
 }

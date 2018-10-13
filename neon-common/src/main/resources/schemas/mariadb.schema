@@ -1,0 +1,28 @@
+CREATE TABLE `{prefix}_players` (
+  `uuid` VARCHAR(36) NOT NULL,
+  `username` VARCHAR(16) NOT NULL,
+  PRIMARY KEY (`uuid`)
+) DEFAULT CHARSET = utf8;
+CREATE INDEX `{prefix}_players_username` ON `{prefix}_players` (`username`);
+
+CREATE TABLE `{prefix}_log` (
+  `id` INT AUTO_INCREMENT NOT NULL,
+  `time` BIGINT NOT NULL,
+  `actor_uuid` VARCHAR(36)  NOT NULL,
+  `type` VARCHAR(16)  NOT NULL,
+  `acted_uuid` VARCHAR(36)  NOT NULL,
+  `action` VARCHAR(300) NOT NULL,
+  PRIMARY KEY (`id`)
+) DEFAULT CHARSET = utf8;
+
+CREATE TABLE `{prefix}_punishments` (
+  `id` INT AUTO_INCREMENT NOT NULL,
+  `target_uuid` VARCHAR(36) NOT NULL,
+  `actor_uuid` VARCHAR(36)  NOT NULL,
+  `type` VARCHAR(16) NOT NULL,
+  `reason` VARCHAR(300) NULL DEFAULT NULL,
+  `given` LONG NOT NULL,
+  `expiration` LONG NOT NULL,
+  `revoked` INT NULL REFERENCES `{prefix}_log`(`id`),
+  PRIMARY KEY (`id`)
+);

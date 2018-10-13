@@ -23,21 +23,38 @@
  * SOFTWARE.
  */
 
-package me.tassu.neon.api.user;
-
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
-
-import java.util.UUID;
+package me.tassu.neon.common.plugin;
 
 /**
- * Provides {@link User}s from the database.
+ * Interface providing information about this current platform.
  */
-public interface UserManager {
+public interface Platform {
 
-    @NonNull User getConsoleUser();
+    /**
+     * @return version of this plugin
+     */
+    String getPluginVersion();
 
-    @Nullable User getUser(@NonNull String name);
-    @NonNull User getUser(@NonNull UUID uuid);
+    /**
+     * @return name of this platform
+     */
+    String getPlatformName();
+
+    /**
+     * @return version of this platform
+     */
+    String getPlatformVersion();
+
+    /**
+     * @return version of the api running this platform
+     */
+    default String getPlatformApiVersion() {
+        return getPlatformVersion();
+    }
+
+    /**
+     * @return true if you are currently off the main thread
+     */
+    boolean isAsync();
 
 }

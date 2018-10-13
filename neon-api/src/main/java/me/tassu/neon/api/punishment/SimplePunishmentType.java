@@ -23,21 +23,43 @@
  * SOFTWARE.
  */
 
-package me.tassu.neon.api.user;
+package me.tassu.neon.api.punishment;
 
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import lombok.Getter;
 
-import java.util.UUID;
+public enum SimplePunishmentType implements PunishmentType {
 
-/**
- * Provides {@link User}s from the database.
- */
-public interface UserManager {
+    BAN("ban", true, false, true),
+    MUTE("mute", false, true, true),
+    KICK("kick", false, false, false)
 
-    @NonNull User getConsoleUser();
+    ;
 
-    @Nullable User getUser(@NonNull String name);
-    @NonNull User getUser(@NonNull UUID uuid);
+    SimplePunishmentType(String id, boolean shouldPreventJoin, boolean shouldPreventChat, boolean isRemovable) {
+        this.id = id;
+        this.shouldPreventJoin = shouldPreventJoin;
+        this.shouldPreventChat = shouldPreventChat;
+        this.isRemovable = isRemovable;
+    }
 
+    @Getter private String id;
+
+    private boolean shouldPreventJoin;
+    private boolean shouldPreventChat;
+    private boolean isRemovable;
+
+    @Override
+    public boolean shouldPreventJoin() {
+        return shouldPreventJoin;
+    }
+
+    @Override
+    public boolean shouldPreventChat() {
+        return shouldPreventChat;
+    }
+
+    @Override
+    public boolean isRemovable() {
+        return isRemovable;
+    }
 }

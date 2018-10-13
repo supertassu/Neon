@@ -23,21 +23,16 @@
  * SOFTWARE.
  */
 
-package me.tassu.neon.api.user;
+package me.tassu.neon.common.db;
 
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
+public class Schema {
 
-import java.util.UUID;
+    private Schema() {}
 
-/**
- * Provides {@link User}s from the database.
- */
-public interface UserManager {
+    public static final String ADD_PUNISHMENT = "" +
+            "INSERT INTO {prefix}_punishments (actor_uuid, target_uuid, type, reason, given, expiration) VALUES (?, ?, ?, ?, ?, ?);";
 
-    @NonNull User getConsoleUser();
-
-    @Nullable User getUser(@NonNull String name);
-    @NonNull User getUser(@NonNull UUID uuid);
+    public static final String SELECT_ALL_PUNISHMENTS_FOR_USER =
+            "SELECT actor_uuid, type, reason, given, expiration FROM {prefix}_punishments WHERE target_uuid=? AND revoked IS NULL";
 
 }

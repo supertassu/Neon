@@ -23,21 +23,31 @@
  * SOFTWARE.
  */
 
-package me.tassu.neon.api.user;
+package me.tassu.neon.common.punishment;
 
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+import lombok.val;
+import me.tassu.neon.api.punishment.PunishmentManager;
+import me.tassu.neon.api.user.UserManager;
 
+import java.util.Optional;
 import java.util.UUID;
 
-/**
- * Provides {@link User}s from the database.
- */
-public interface UserManager {
+@Singleton
+public class PunishmentHandler {
 
-    @NonNull User getConsoleUser();
+    @Inject private PunishmentManager punishmentManager;
+    @Inject private UserManager userManager;
 
-    @Nullable User getUser(@NonNull String name);
-    @NonNull User getUser(@NonNull UUID uuid);
+    public Optional<String> onJoin(UUID uuid) {
+        val user = userManager.getUser(uuid);
+
+
+        val punishments = punishmentManager.getActivePunishments(user)
+                .stream().filter(it -> it.getType().shouldPreventJoin()).findAny();
+        return punishments.map(Object::toString);
+
+    }
 
 }

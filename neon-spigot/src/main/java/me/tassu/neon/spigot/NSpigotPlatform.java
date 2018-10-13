@@ -23,21 +23,40 @@
  * SOFTWARE.
  */
 
-package me.tassu.neon.api.user;
+package me.tassu.neon.spigot;
 
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+import me.tassu.neon.common.plugin.Platform;
+import org.bukkit.Bukkit;
 
-import java.util.UUID;
+@Singleton
+public class NSpigotPlatform implements Platform {
 
-/**
- * Provides {@link User}s from the database.
- */
-public interface UserManager {
+    @Inject private NSpigotBootstrap plugin;
 
-    @NonNull User getConsoleUser();
+    @Override
+    public String getPluginVersion() {
+        return plugin.getDescription().getVersion();
+    }
 
-    @Nullable User getUser(@NonNull String name);
-    @NonNull User getUser(@NonNull UUID uuid);
+    @Override
+    public String getPlatformName() {
+        return Bukkit.getServer().getName();
+    }
 
+    @Override
+    public String getPlatformVersion() {
+        return Bukkit.getServer().getVersion();
+    }
+
+    @Override
+    public String getPlatformApiVersion() {
+        return Bukkit.getServer().getBukkitVersion();
+    }
+
+    @Override
+    public boolean isAsync() {
+        return !Bukkit.isPrimaryThread();
+    }
 }

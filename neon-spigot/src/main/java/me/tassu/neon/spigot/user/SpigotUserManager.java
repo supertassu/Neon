@@ -23,26 +23,56 @@
  * SOFTWARE.
  */
 
-package me.tassu.neon.api.user;
+package me.tassu.neon.spigot.user;
 
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
+import com.google.inject.Singleton;
+import me.tassu.neon.api.user.User;
+import me.tassu.neon.api.user.UserManager;
+import me.tassu.neon.common.user.FakeUser;
+import org.bukkit.Bukkit;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
+import java.time.Duration;
 import java.util.UUID;
 
-/**
- * Represents the game server as an user.
- */
-public interface ServerUser extends User {
+@Singleton
+public class SpigotUserManager implements UserManager {
+
+    private LoadingCache<UUID, SpigotRealUser> cache = CacheBuilder.newBuilder()
+            .maximumSize(Bukkit.getMaxPlayers())
+            .weakKeys()
+            .expireAfterAccess(Duration.ofMinutes(15))
+            .build(new CacheLoader<UUID, SpigotRealUser>() {
+                @Override
+                public SpigotRealUser load(@NonNull UUID key) {
+                    return new SpigotRealUser(key);
+                }
+            });
+
+    private FakeUser console = new FakeUser();
 
     @Override
-    default @NonNull UUID getUuid() {
-        return UUID.fromString("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa");
+    public @NonNull User getConsoleUser() {
+        return console;
     }
 
     @Override
-    @Nullable
-    default String getName() {
-        return "Server";
+    public @Nullable User getUser(@NonNull String name) {
+        return null;
     }
+
+    @Override
+    public @NonNull User getUser(@NonNull UUID uuid) {
+        if (uuid == console.getUuid()) return console;
+        return cache.getUnchecked(uuid);
+    }
+
+    public void housekeep() {
+        cache.cleanUp();
+    }
+
 }

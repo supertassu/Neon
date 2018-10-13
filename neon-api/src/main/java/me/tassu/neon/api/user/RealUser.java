@@ -25,19 +25,15 @@
 
 package me.tassu.neon.api.user;
 
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
+public interface RealUser extends User {
 
-import java.util.UUID;
+    /**
+     * @return true if player is currently online on this server, false otherwise
+     */
+    boolean isOnline();
 
-/**
- * Provides {@link User}s from the database.
- */
-public interface UserManager {
-
-    @NonNull User getConsoleUser();
-
-    @Nullable User getUser(@NonNull String name);
-    @NonNull User getUser(@NonNull UUID uuid);
-
+    @Override
+    default boolean isRealPlayer() {
+        return true;
+    }
 }

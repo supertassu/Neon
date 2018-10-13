@@ -27,6 +27,8 @@ package me.tassu.neon.common.plugin;
 
 import com.google.inject.AbstractModule;
 import lombok.AllArgsConstructor;
+import me.tassu.neon.api.punishment.PunishmentManager;
+import me.tassu.neon.api.user.UserManager;
 import me.tassu.neon.common.scheduler.Scheduler;
 
 @AllArgsConstructor
@@ -36,7 +38,9 @@ public class ImplementationModule extends AbstractModule {
 
     @Override
     protected void configure() {
-        bind(PlatformInfo.class).to(bootstrap.getPlatformInfo());
+        bind(Platform.class).to(bootstrap.getPlatformInfo());
         bind(Scheduler.class).to(bootstrap.getScheduler());
+        bind(UserManager.class).to(bootstrap.getUserManager());
+        bind(PunishmentManager.class).to(bootstrap.getPunishmentManager());
     }
 }

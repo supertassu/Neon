@@ -23,21 +23,25 @@
  * SOFTWARE.
  */
 
-package me.tassu.neon.api.user;
+package me.tassu.neon.spigot;
 
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import com.google.inject.Inject;
+import lombok.val;
+import me.tassu.neon.common.punishment.PunishmentHandler;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 
-import java.util.UUID;
+public class NSpigotListener implements Listener {
 
-/**
- * Provides {@link User}s from the database.
- */
-public interface UserManager {
+    @Inject private PunishmentHandler handler;
 
-    @NonNull User getConsoleUser();
-
-    @Nullable User getUser(@NonNull String name);
-    @NonNull User getUser(@NonNull UUID uuid);
-
+    @EventHandler
+    public void onAsyncPlayerPreLogin(AsyncPlayerPreLoginEvent event) {
+        val kick = handler.onJoin(event.getUniqueId());
+        if (kick.isPresent()) {
+            event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_BANNED);
+            event.setKickMessage(kick.get());
+        }
+    }
 }

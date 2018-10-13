@@ -23,21 +23,24 @@
  * SOFTWARE.
  */
 
-package me.tassu.neon.api.user;
+package me.tassu.neon.api.punishment;
 
+import me.tassu.neon.api.user.User;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
-import java.util.UUID;
+public interface Punishment {
 
-/**
- * Provides {@link User}s from the database.
- */
-public interface UserManager {
+    @NonNull User getTarget();
+    @NonNull User getActor();
 
-    @NonNull User getConsoleUser();
+    @Nullable String getReason();
 
-    @Nullable User getUser(@NonNull String name);
-    @NonNull User getUser(@NonNull UUID uuid);
+    long getStartDate();
+    long getExpiryDate();
+
+    boolean hasExpired();
+
+    @NonNull PunishmentType getType();
 
 }

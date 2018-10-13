@@ -26,6 +26,9 @@
 package me.tassu.neon.common.plugin;
 
 import com.google.inject.Module;
+import me.tassu.neon.api.punishment.PunishmentManager;
+import me.tassu.neon.api.user.UserManager;
+import me.tassu.neon.common.punishment.SimplePunishmentManager;
 import me.tassu.neon.common.scheduler.Scheduler;
 
 /**
@@ -33,8 +36,14 @@ import me.tassu.neon.common.scheduler.Scheduler;
  */
 public interface NeonBootstrap {
 
-    Class<? extends PlatformInfo> getPlatformInfo();
+    Class<? extends Platform> getPlatformInfo();
     Class<? extends Scheduler> getScheduler();
+
+    default Class<? extends PunishmentManager> getPunishmentManager() {
+        return SimplePunishmentManager.class;
+    }
+
+    Class<? extends UserManager> getUserManager();
 
     /**
      * Should provide at least:

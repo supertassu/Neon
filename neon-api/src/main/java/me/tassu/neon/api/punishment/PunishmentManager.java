@@ -23,35 +23,26 @@
  * SOFTWARE.
  */
 
-package me.tassu.neon.spigot;
+package me.tassu.neon.api.punishment;
 
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
-import me.tassu.neon.common.plugin.PlatformInfo;
-import org.bukkit.Bukkit;
+import lombok.NonNull;
+import me.tassu.neon.api.user.User;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
-@Singleton
-public class NSpigotPlatformInfo implements PlatformInfo {
+import java.util.Set;
 
-    @Inject private NSpigotBootstrap plugin;
+/**
+ * Provides access to the punishments.
+ */
+public interface PunishmentManager {
 
-    @Override
-    public String getPluginVersion() {
-        return plugin.getDescription().getVersion();
-    }
+    @NonNull
+    Set<Punishment> getActivePunishments(@NonNull User user);
 
-    @Override
-    public String getPlatformName() {
-        return Bukkit.getServer().getName();
-    }
+    @Nullable
+    PunishmentType getTypeById(@NonNull String id);
 
-    @Override
-    public String getPlatformVersion() {
-        return Bukkit.getServer().getVersion();
-    }
+    @NonNull
+    Punishment createPunishment(User target, User actor, long expiry, String reason, PunishmentType type);
 
-    @Override
-    public String getPlatformApiVersion() {
-        return Bukkit.getServer().getBukkitVersion();
-    }
 }

@@ -34,8 +34,10 @@ import me.tassu.neon.api.NeonAPI;
 import me.tassu.neon.common.config.NeonConfig;
 import me.tassu.neon.common.db.StorageConnector;
 import me.tassu.neon.common.db.factory.ConnectionFactory;
+import me.tassu.neon.common.scheduler.Scheduler;
 import me.tassu.util.ArrayUtil;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.slf4j.Logger;
 
 import java.io.InputStream;
@@ -45,7 +47,8 @@ import static me.tassu.util.ErrorUtil.run;
 public abstract class NeonPlugin {
 
     @Inject private Logger logger;
-    @Inject private PlatformInfo platform;
+    @Inject private Platform platform;
+    @Inject private Scheduler scheduler;
 
     @Inject private NeonConfig config;
 
@@ -63,7 +66,7 @@ public abstract class NeonPlugin {
         injector.injectMembers(NeonAPI.getInstance());
     }
 
-    public final void startup() {
+    public void startup() {
         long startTime = System.currentTimeMillis();
         logger.info("");
         logger.info("§4  /\\ \\ \\___  ___  _ __  ");
@@ -73,6 +76,7 @@ public abstract class NeonPlugin {
         logger.info("");
         logger.info("§4= §7Booting up Neon §cv" + platform.getPluginVersion()
                 + "§7 running on §f" + platform.getPlatformName() + " " + platform.getPlatformVersion() + "§7.");
+
         logger.info("§4== §7Loading configuration");
         run(() -> {
             config.load();
@@ -83,6 +87,9 @@ public abstract class NeonPlugin {
             logger.error("§4=== §7Unsupported config version §c" + config.getConfigVersion());
             throw new RuntimeException("Unsupported config version " + config.getConfigVersion());
         }
+
+        logger.info("§4== §7Starting scheduler");
+        scheduler.boot();
 
         logger.info("§4== §7Connecting to database");
         connector.startup();
@@ -104,12 +111,17 @@ public abstract class NeonPlugin {
 
         logger.info("§4=== §7Connected to database with ping of §c" + meta.getOrDefault("Ping", "(NaN)") + "§7.");
 
+        connector.init();
+        logger.info("§4=== §7Database is good to go!");
+
         logger.info("§4= §7Neon should be good to go. Took §c" + (System.currentTimeMillis() - startTime) + "ms§7.");
     }
 
     public final void shutdown() {
-        getFactory().shutdown();
-        run(() -> config.save());
+        if (scheduler != null) scheduler.shutdown();
+        if (connector != null) connector.teardown();
+
+        if (config != null) run(() -> config.save());
     }
 
     /**
@@ -118,6 +130,7 @@ public abstract class NeonPlugin {
      * @param path the path of the file
      * @return the file as an input stream
      */
-    public abstract InputStream getResourceStream(String path);
+    @Nullable
+    public abstract InputStream getResourceStream(@NonNull String path);
 
 }

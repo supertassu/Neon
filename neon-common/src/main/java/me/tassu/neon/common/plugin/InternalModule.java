@@ -33,4 +33,8 @@ public class InternalModule extends AbstractModule {
 
     private final NeonPlugin plugin;
 
+    @Override
+    protected void configure() {
+        bind(NeonPlugin.class).toInstance(plugin);
+    }
 }

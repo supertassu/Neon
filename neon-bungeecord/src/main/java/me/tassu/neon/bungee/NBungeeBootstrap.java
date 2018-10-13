@@ -26,8 +26,9 @@
 package me.tassu.neon.bungee;
 
 import com.google.inject.AbstractModule;
+import me.tassu.neon.api.user.UserManager;
 import me.tassu.neon.common.plugin.NeonBootstrap;
-import me.tassu.neon.common.plugin.PlatformInfo;
+import me.tassu.neon.common.plugin.Platform;
 import me.tassu.neon.common.scheduler.Scheduler;
 import net.md_5.bungee.api.plugin.Plugin;
 
@@ -44,12 +45,17 @@ public final class NBungeeBootstrap extends Plugin implements NeonBootstrap {
     }
 
     @Override
-    public Class<? extends PlatformInfo> getPlatformInfo() {
+    public Class<? extends Platform> getPlatformInfo() {
         throw new UnsupportedOperationException("Not implemented yet.");
     }
 
     @Override
     public Class<? extends Scheduler> getScheduler() {
+        throw new UnsupportedOperationException("Not implemented yet.");
+    }
+
+    @Override
+    public Class<? extends UserManager> getUserManager() {
         throw new UnsupportedOperationException("Not implemented yet.");
     }
 

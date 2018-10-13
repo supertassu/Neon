@@ -42,6 +42,9 @@ public class StorageConfig {
     @Setting
     private StorageType type = StorageType.MARIADB;
 
+    @Setting("prefix")
+    private String tablePrefix = "neon";
+
     @Setting
     private String address = "localhost";
 

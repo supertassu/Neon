@@ -29,8 +29,19 @@ import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.Singleton;
 import lombok.Getter;
+import lombok.experimental.var;
+import lombok.val;
 import me.tassu.neon.common.config.NeonConfig;
 import me.tassu.neon.common.db.factory.ConnectionFactory;
+import me.tassu.neon.common.plugin.NeonPlugin;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.function.Function;
 
 import static me.tassu.util.ErrorUtil.run;
 
@@ -39,7 +50,11 @@ public class StorageConnector {
 
     @Getter private ConnectionFactory factory;
     @Inject private Injector injector;
+    @Inject private NeonPlugin plugin;
     @Inject private NeonConfig config;
+
+    @Getter
+    private Function<String, String> statementProcessor;
 
     public void startup() {
         if (factory != null) throw new IllegalStateException("already connected");
@@ -49,10 +64,65 @@ public class StorageConnector {
         injector.injectMembers(factory);
 
         factory.init();
+
+        this.statementProcessor = factory.getStatementProcessor()
+                .compose(s -> s.replace("{prefix}", config.getConfig().getStorageConfig().getTablePrefix()));
     }
 
     public void teardown() {
-        factory.shutdown();
+        if (factory != null) factory.shutdown();
+    }
+
+    public void init() {
+        run(() -> {
+            if (!tableExists("{prefix}_players")) {
+                try (val is = plugin.getResourceStream("schemas/" + factory.getImplementationName().toLowerCase() + ".schema")) {
+                    if (is == null) {
+                        throw new Exception("Couldn't locate schema file for " + factory.getImplementationName());
+                    }
+
+                    try (val reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8))) {
+                        try (val connection = factory.getConnection()) {
+                            try (val s = connection.createStatement()) {
+                                var sb = new StringBuilder();
+                                String line;
+                                while ((line = reader.readLine()) != null) {
+                                    if (line.startsWith("--") || line.startsWith("#")) continue;
+
+                                    sb.append(line);
+
+                                    // check for end of declaration
+                                    if (line.endsWith(";")) {
+                                        sb.deleteCharAt(sb.length() - 1);
+
+                                        val result = this.statementProcessor.apply(sb.toString().trim());
+                                        if (!result.isEmpty()) s.addBatch(result);
+
+                                        // reset
+                                        sb = new StringBuilder();
+                                    }
+                                }
+
+                                s.executeBatch();
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    private boolean tableExists(@SuppressWarnings("SameParameterValue") String table) throws SQLException {
+        try (Connection connection = this.factory.getConnection()) {
+            try (ResultSet rs = connection.getMetaData().getTables(null, null, "%", null)) {
+                while (rs.next()) {
+                    if (rs.getString(3).equalsIgnoreCase(table)) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+        }
     }
 
 }

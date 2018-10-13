@@ -26,16 +26,104 @@
 package me.tassu.neon.spigot;
 
 import com.google.inject.Inject;
+import me.tassu.neon.common.plugin.Platform;
 import me.tassu.neon.common.scheduler.Scheduler;
+import me.tassu.neon.common.scheduler.Task;
 import org.bukkit.scheduler.BukkitScheduler;
+import org.bukkit.scheduler.BukkitTask;
+
+import java.lang.reflect.Field;
+import java.util.Map;
 
 public class NSpigotScheduler implements Scheduler {
 
     @Inject private NSpigotBootstrap plugin;
+    @Inject private Platform platform;
+
     @Inject private BukkitScheduler scheduler;
+    private BukkitScheduler asyncScheduler;
+
+    @Override
+    public void boot() {} // NO-OP
 
     @Override
     public void shutdown() {
         scheduler.cancelTasks(plugin);
+    }
+
+    @Override
+    public void schedule(Task task) {
+        if (task.getTaskId() != -1 && getTask(task.getTaskId(), task.isAsync()) != null) {
+            throw new IllegalArgumentException("already scheduled");
+        }
+
+        BukkitTask bukkit;
+        if (task.isAsync()) {
+            bukkit = scheduler.runTaskTimerAsynchronously(plugin, task, task.getDelay(), task.getRepeat());
+        } else {
+            bukkit = scheduler.runTaskTimer(plugin, task, task.getDelay(), task.getRepeat());
+        }
+
+        task.setTaskId(bukkit.getTaskId());
+    }
+
+    @Override
+    public void unschedule(Task task) {
+        if (task.getTaskId() == -1 || getTask(task.getTaskId(), task.isAsync()) == null) {
+            throw new IllegalArgumentException("not scheduled");
+        }
+
+        scheduler.cancelTask(task.getTaskId());
+    }
+
+    @Override
+    public void async(Runnable runnable) {
+        if (platform.isAsync()) {
+            runnable.run();
+            return;
+        }
+
+        scheduler.runTaskAsynchronously(plugin, runnable);
+    }
+
+    @Override
+    public void sync(Runnable runnable) {
+        if (!platform.isAsync()) {
+            runnable.run();
+            return;
+        }
+
+        scheduler.runTask(plugin, runnable);
+    }
+
+    @Override
+    public boolean isScheduled(Task task) {
+        return task.getTaskId() != -1 && getTask(task.getTaskId(), task.isAsync()) != null;
+    }
+
+    private Field runnerField;
+
+    private BukkitTask getTask(int taskId, boolean isAsync) {
+        try {
+            if (runnerField == null) {
+                runnerField = scheduler.getClass().getDeclaredField("runners");
+                runnerField.setAccessible(true);
+            }
+
+            if (asyncScheduler == null) {
+                asyncScheduler = (BukkitScheduler) scheduler.getClass()
+                        .getDeclaredField("asyncScheduler").get(scheduler);
+            }
+
+            if (isAsync) {
+                //noinspection unchecked
+                return ((Map<Integer, BukkitTask>) runnerField.get(asyncScheduler)).get(taskId);
+            } else {
+                //noinspection unchecked
+                return ((Map<Integer, BukkitTask>) runnerField.get(scheduler)).get(taskId);
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("unable to retrieve task by id", e);
+        }
     }
 }

@@ -26,14 +26,29 @@
 package me.tassu.neon.spigot;
 
 import com.google.inject.Inject;
+import me.tassu.neon.api.punishment.PunishmentManager;
+import me.tassu.neon.api.punishment.SimplePunishmentType;
+import me.tassu.neon.api.user.UserManager;
 import me.tassu.neon.common.plugin.NeonPlugin;
+import me.tassu.neon.spigot.task.HousekeeperTask;
+import org.bukkit.plugin.PluginManager;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.io.InputStream;
+import java.util.UUID;
 
 public final class NSpigotPlugin extends NeonPlugin {
 
     @Inject private NSpigotBootstrap plugin;
+    @Inject private NSpigotScheduler scheduler;
+    @Inject private HousekeeperTask housekeeper;
+
+    @Inject private PluginManager manager;
+    @Inject private NSpigotListener listener;
+
+    @Inject private UserManager userManager;
+    @Inject private PunishmentManager punishmentManager;
 
     public NSpigotPlugin(@NonNull NSpigotBootstrap bootstrap) {
         super(bootstrap);
@@ -44,7 +59,23 @@ public final class NSpigotPlugin extends NeonPlugin {
     }
 
     @Override
-    public InputStream getResourceStream(String path) {
+    public void startup() {
+        super.startup();
+
+        if (plugin == null) {
+            throw new IllegalStateException("injection failed");
+        }
+
+        scheduler.schedule(housekeeper);
+        manager.registerEvents(listener, plugin);
+
+        System.out.println(punishmentManager.createPunishment(userManager.getUser(UUID.fromString("c19bbd36-3fd0-4b30-b40c-89f70e989dcb")),
+                userManager.getConsoleUser(), -1, "foo bar", SimplePunishmentType.BAN));
+    }
+
+    @Override
+    @Nullable
+    public InputStream getResourceStream(@NonNull String path) {
         return plugin.getResource(path);
     }
 }

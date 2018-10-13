@@ -23,21 +23,24 @@
  * SOFTWARE.
  */
 
-package me.tassu.neon.api.user;
+package me.tassu.neon.spigot.task;
 
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import com.google.inject.Inject;
+import me.tassu.neon.common.scheduler.Task;
+import me.tassu.neon.spigot.user.SpigotUserManager;
+import org.slf4j.Logger;
 
-import java.util.UUID;
+public class HousekeeperTask extends Task {
 
-/**
- * Provides {@link User}s from the database.
- */
-public interface UserManager {
+    @Inject private Logger logger;
+    @Inject private SpigotUserManager userManager;
 
-    @NonNull User getConsoleUser();
+    public HousekeeperTask() {
+        super(true, 600, 600);
+    }
 
-    @Nullable User getUser(@NonNull String name);
-    @NonNull User getUser(@NonNull UUID uuid);
-
+    @Override
+    public void run() {
+        userManager.housekeep();
+    }
 }

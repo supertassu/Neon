@@ -25,11 +25,18 @@
 
 package me.tassu.neon.api;
 
+import com.google.inject.Inject;
 import lombok.Getter;
+import me.tassu.neon.api.user.UserManager;
 
+@Getter
 public class NeonAPI {
+
+    private NeonAPI() {}
 
     @Getter
     private static final NeonAPI instance = new NeonAPI();
+
+    @Inject private UserManager userManager;
 
 }

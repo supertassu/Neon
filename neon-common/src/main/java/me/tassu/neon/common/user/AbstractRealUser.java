@@ -23,21 +23,33 @@
  * SOFTWARE.
  */
 
-package me.tassu.neon.api.user;
+package me.tassu.neon.common.user;
 
+import com.google.common.base.MoreObjects;
+import lombok.AllArgsConstructor;
+import me.tassu.neon.api.user.RealUser;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.UUID;
 
-/**
- * Provides {@link User}s from the database.
- */
-public interface UserManager {
+@AllArgsConstructor
+public abstract class AbstractRealUser implements RealUser {
 
-    @NonNull User getConsoleUser();
+    private UUID uuid;
 
-    @Nullable User getUser(@NonNull String name);
-    @NonNull User getUser(@NonNull UUID uuid);
+    @NonNull
+    @Override
+    public UUID getUuid() {
+        return uuid;
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("uuid", getUuid())
+                .add("name", getName())
+                .add("isRealPlayer", isRealPlayer())
+                .toString();
+    }
 
 }

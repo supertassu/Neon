@@ -23,33 +23,55 @@
  * SOFTWARE.
  */
 
-package me.tassu.neon.common.plugin;
+package me.tassu.neon.common.user;
 
-/**
- * Interface providing information about this current platform.
- */
-public interface PlatformInfo {
+import com.google.common.base.MoreObjects;
+import lombok.ToString;
+import me.tassu.neon.api.user.User;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
-    /**
-     * @return version of this plugin
-     */
-    String getPluginVersion();
+import java.util.UUID;
 
-    /**
-     * @return name of this platform
-     */
-    String getPlatformName();
+public class FakeUser implements User {
 
-    /**
-     * @return version of this platform
-     */
-    String getPlatformVersion();
+    private UUID uuid;
+    private String name;
 
-    /**
-     * @return version of the api running this platform
-     */
-    default String getPlatformApiVersion() {
-        return getPlatformVersion();
+    public FakeUser() {
+        this(UUID.fromString("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"));
     }
 
+    public FakeUser(UUID uuid) {
+        this(uuid, "Console");
+    }
+
+    public FakeUser(UUID uuid, String name) {
+        this.uuid = uuid;
+        this.name = name;
+    }
+
+    @Override
+    public @NonNull UUID getUuid() {
+        return uuid;
+    }
+
+    @Override
+    public @Nullable String getName() {
+        return name;
+    }
+
+    @Override
+    public boolean isRealPlayer() {
+        return false;
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("uuid", getUuid())
+                .add("name", getName())
+                .add("isRealPlayer", isRealPlayer())
+                .toString();
+    }
 }

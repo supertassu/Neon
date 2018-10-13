@@ -38,7 +38,7 @@ public interface User {
     /**
      * Gets the users unique ID
      *
-     * @return the users Mojang assigned unique id
+     * @return the users Mojang assigned unique taskId
      */
     @NonNull
     UUID getUuid();
@@ -50,6 +50,12 @@ public interface User {
      *
      * @return the users username
      */
-    @Nullable String getName();
+    @Nullable
+    String getName();
+
+    /**
+     * @return True if a real player, false otherwise
+     */
+    boolean isRealPlayer();
 
 }

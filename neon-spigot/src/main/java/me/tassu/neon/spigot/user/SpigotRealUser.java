@@ -23,21 +23,32 @@
  * SOFTWARE.
  */
 
-package me.tassu.neon.api.user;
+package me.tassu.neon.spigot.user;
 
-import org.checkerframework.checker.nullness.qual.NonNull;
+import me.tassu.neon.common.user.AbstractRealUser;
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.UUID;
 
-/**
- * Provides {@link User}s from the database.
- */
-public interface UserManager {
+public class SpigotRealUser extends AbstractRealUser {
 
-    @NonNull User getConsoleUser();
+    public SpigotRealUser(UUID uuid) {
+        super(uuid);
+    }
 
-    @Nullable User getUser(@NonNull String name);
-    @NonNull User getUser(@NonNull UUID uuid);
+    private OfflinePlayer bukkit() {
+        return Bukkit.getOfflinePlayer(getUuid());
+    }
 
+    @Override
+    public boolean isOnline() {
+        return bukkit().isOnline();
+    }
+
+    @Override
+    public @Nullable String getName() {
+        return bukkit().getName();
+    }
 }

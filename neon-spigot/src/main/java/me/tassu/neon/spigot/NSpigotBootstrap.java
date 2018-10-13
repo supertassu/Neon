@@ -26,9 +26,11 @@
 package me.tassu.neon.spigot;
 
 import com.google.inject.AbstractModule;
+import me.tassu.neon.api.user.UserManager;
 import me.tassu.neon.common.plugin.NeonBootstrap;
-import me.tassu.neon.common.plugin.PlatformInfo;
+import me.tassu.neon.common.plugin.Platform;
 import me.tassu.neon.common.scheduler.Scheduler;
+import me.tassu.neon.spigot.user.SpigotUserManager;
 import me.tassu.util.spigot.SimplePluginModule;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -56,12 +58,17 @@ public final class NSpigotBootstrap extends JavaPlugin implements NeonBootstrap 
     }
 
     @Override
-    public Class<? extends PlatformInfo> getPlatformInfo() {
-        return NSpigotPlatformInfo.class;
+    public Class<? extends Platform> getPlatformInfo() {
+        return NSpigotPlatform.class;
     }
 
     @Override
     public Class<? extends Scheduler> getScheduler() {
         return NSpigotScheduler.class;
+    }
+
+    @Override
+    public Class<? extends UserManager> getUserManager() {
+        return SpigotUserManager.class;
     }
 }

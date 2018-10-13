@@ -23,21 +23,30 @@
  * SOFTWARE.
  */
 
-package me.tassu.neon.api.user;
+package me.tassu.neon.common.scheduler;
 
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import lombok.Getter;
+import lombok.Setter;
 
-import java.util.UUID;
+@Getter
+public abstract class Task implements Runnable {
 
-/**
- * Provides {@link User}s from the database.
- */
-public interface UserManager {
+    @Setter
+    private int taskId = -1;
 
-    @NonNull User getConsoleUser();
+    private boolean async;
+    private int repeat;
+    private int delay;
 
-    @Nullable User getUser(@NonNull String name);
-    @NonNull User getUser(@NonNull UUID uuid);
+    public Task(boolean async, int repeat, int delay) {
+        this.async = async;
+        this.repeat = repeat;
+        this.delay = delay;
+    }
 
+    public Task(boolean async, int delay) {
+        this.async = async;
+        this.repeat = -1;
+        this.delay = delay;
+    }
 }
