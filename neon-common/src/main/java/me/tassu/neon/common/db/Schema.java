@@ -27,12 +27,17 @@ package me.tassu.neon.common.db;
 
 public class Schema {
 
-    private Schema() {}
+    public static final String SELECT_USER_BY_UUID = "SELECT uuid, username FROM {prefix}_players WHERE uuid=? LIMIT 1;";
 
-    public static final String ADD_PUNISHMENT = "" +
+    public static final String ADD_OR_UPDATE_USER =
+            "INSERT INTO {prefix}_players (uuid, username) VALUES (?, ?) ON DUPLICATE KEY UPDATE username=?;";
+
+    public static final String ADD_PUNISHMENT =
             "INSERT INTO {prefix}_punishments (actor_uuid, target_uuid, type, reason, given, expiration) VALUES (?, ?, ?, ?, ?, ?);";
 
     public static final String SELECT_ALL_PUNISHMENTS_FOR_USER =
             "SELECT actor_uuid, type, reason, given, expiration FROM {prefix}_punishments WHERE target_uuid=? AND revoked IS NULL";
+
+    private Schema() {}
 
 }

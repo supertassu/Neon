@@ -59,8 +59,6 @@ public class SimplePunishmentManager implements PunishmentManager {
                                 result.getLong("given"), result.getLong("expiration"), result.getString("reason")
                         );
 
-                        System.out.println("found: " + punishment);
-
                         if (!punishment.hasExpired()) data.add(punishment);
                     }
                 }
@@ -74,7 +72,6 @@ public class SimplePunishmentManager implements PunishmentManager {
 
     @Override
     public Punishment createPunishment(User target, User actor, long expiry, String reason, PunishmentType type) {
-        System.out.println(connector);
         try (val connection = connector.getFactory().getConnection()) {
             try (val statement = connection.prepareStatement(connector.getStatementProcessor().apply(Schema.ADD_PUNISHMENT))) {
                 statement.setString(1, actor.getUuid().toString());

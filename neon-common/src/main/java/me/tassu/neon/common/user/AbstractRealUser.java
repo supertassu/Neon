@@ -26,21 +26,66 @@
 package me.tassu.neon.common.user;
 
 import com.google.common.base.MoreObjects;
-import lombok.AllArgsConstructor;
+import lombok.val;
 import me.tassu.neon.api.user.RealUser;
+import me.tassu.neon.common.db.Schema;
+import me.tassu.neon.common.db.StorageConnector;
+import me.tassu.neon.common.scheduler.Scheduler;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
+import java.sql.SQLException;
 import java.util.UUID;
 
-@AllArgsConstructor
 public abstract class AbstractRealUser implements RealUser {
 
     private UUID uuid;
+    private String name = null;
+
+    public AbstractRealUser(StorageConnector connector, Scheduler scheduler, UUID uuid, String name) {
+        if (name != null) {
+            this.name = name;
+
+            scheduler.async(() -> {
+                try (val connection = connector.getFactory().getConnection()) {
+                    try (val statement = connection.prepareStatement(connector.getStatementProcessor().apply(Schema.ADD_OR_UPDATE_USER))) {
+                        statement.setString(1, uuid.toString());
+                        statement.setString(2, name);
+                        statement.setString(3, name);
+                    }
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
+            });
+        } else {
+            scheduler.async(() -> {
+                try (val connection = connector.getFactory().getConnection()) {
+                    try (val statement = connection.prepareStatement(connector.getStatementProcessor().apply(Schema.SELECT_USER_BY_UUID))) {
+                        statement.setString(1, uuid.toString());
+                        try (val result = statement.executeQuery()) {
+                            if (result.next()) {
+                                this.name = result.getString("username");
+                            }
+                        }
+                    }
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
+            });
+        }
+
+        this.uuid = uuid;
+    }
 
     @NonNull
     @Override
     public UUID getUuid() {
         return uuid;
+    }
+
+    @Override
+    public @Nullable String getName() {
+        return name;
     }
 
     @Override

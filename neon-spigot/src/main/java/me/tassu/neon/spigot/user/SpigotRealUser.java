@@ -25,17 +25,18 @@
 
 package me.tassu.neon.spigot.user;
 
+import me.tassu.neon.common.db.StorageConnector;
+import me.tassu.neon.common.scheduler.Scheduler;
 import me.tassu.neon.common.user.AbstractRealUser;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
-import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.UUID;
 
 public class SpigotRealUser extends AbstractRealUser {
 
-    public SpigotRealUser(UUID uuid) {
-        super(uuid);
+    public SpigotRealUser(StorageConnector connector, Scheduler scheduler, UUID uuid) {
+        super(connector, scheduler, uuid, Bukkit.getPlayer(uuid) == null ? null : Bukkit.getPlayer(uuid).getName());
     }
 
     private OfflinePlayer bukkit() {
@@ -45,10 +46,5 @@ public class SpigotRealUser extends AbstractRealUser {
     @Override
     public boolean isOnline() {
         return bukkit().isOnline();
-    }
-
-    @Override
-    public @Nullable String getName() {
-        return bukkit().getName();
     }
 }

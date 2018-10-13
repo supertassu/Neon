@@ -23,33 +23,28 @@
  * SOFTWARE.
  */
 
-package me.tassu.neon.common.punishment;
+package me.tassu.neon.common.config;
 
 import com.google.inject.Inject;
-import com.google.inject.Singleton;
-import lombok.val;
-import me.tassu.neon.api.punishment.PunishmentManager;
-import me.tassu.neon.api.user.UserManager;
-import me.tassu.neon.common.plugin.Platform;
+import me.tassu.util.config.AbstractConfig;
+import me.tassu.util.config.ConfigFactory;
+import ninja.leaping.configurate.objectmapping.ObjectMapper;
+import ninja.leaping.configurate.objectmapping.ObjectMappingException;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
-import java.util.Optional;
-import java.util.UUID;
+public class MessageConfig extends AbstractConfig<MessageConfig> {
 
-@Singleton
-public class PunishmentHandler {
+    @Inject
+    public MessageConfig(@NonNull ConfigFactory factory) {
+        // get configuration loader for "neon.conf"
+        loader = factory.getLoader("locale.conf");
 
-    @Inject private Platform platform;
-    @Inject private PunishmentManager punishmentManager;
-    @Inject private UserManager userManager;
-
-    public Optional<String> onJoin(UUID uuid) {
-        if (!platform.isAsync()) throw new IllegalStateException("do this async please");
-
-        val user = userManager.getUser(uuid);
-        val punishments = punishmentManager.getActivePunishments(user)
-                .stream().filter(it -> it.getType().shouldPreventJoin()).findAny();
-        return punishments.map(Object::toString);
-
+        try {
+            // logic handled by AbstractConfig
+            this.configMapper = ObjectMapper.forObject(this);
+        } catch (ObjectMappingException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }

@@ -28,9 +28,12 @@ package me.tassu.neon.spigot.user;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import me.tassu.neon.api.user.User;
 import me.tassu.neon.api.user.UserManager;
+import me.tassu.neon.common.db.StorageConnector;
+import me.tassu.neon.common.scheduler.Scheduler;
 import me.tassu.neon.common.user.FakeUser;
 import org.bukkit.Bukkit;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -42,6 +45,9 @@ import java.util.UUID;
 @Singleton
 public class SpigotUserManager implements UserManager {
 
+    @Inject private StorageConnector connector;
+    @Inject private Scheduler scheduler;
+
     private LoadingCache<UUID, SpigotRealUser> cache = CacheBuilder.newBuilder()
             .maximumSize(Bukkit.getMaxPlayers())
             .weakKeys()
@@ -49,7 +55,7 @@ public class SpigotUserManager implements UserManager {
             .build(new CacheLoader<UUID, SpigotRealUser>() {
                 @Override
                 public SpigotRealUser load(@NonNull UUID key) {
-                    return new SpigotRealUser(key);
+                    return new SpigotRealUser(connector, scheduler, key);
                 }
             });
 

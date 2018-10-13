@@ -38,8 +38,6 @@ import me.tassu.neon.common.plugin.NeonPlugin;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.function.Function;
 
@@ -113,8 +111,8 @@ public class StorageConnector {
     }
 
     private boolean tableExists(@SuppressWarnings("SameParameterValue") String table) throws SQLException {
-        try (Connection connection = this.factory.getConnection()) {
-            try (ResultSet rs = connection.getMetaData().getTables(null, null, "%", null)) {
+        try (val connection = this.factory.getConnection()) {
+            try (val rs = connection.getMetaData().getTables(null, null, "%", null)) {
                 while (rs.next()) {
                     if (rs.getString(3).equalsIgnoreCase(table)) {
                         return true;

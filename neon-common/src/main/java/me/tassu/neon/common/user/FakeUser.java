@@ -26,7 +26,6 @@
 package me.tassu.neon.common.user;
 
 import com.google.common.base.MoreObjects;
-import lombok.ToString;
 import me.tassu.neon.api.user.User;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
