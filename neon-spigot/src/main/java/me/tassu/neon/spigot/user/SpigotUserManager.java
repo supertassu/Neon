@@ -33,7 +33,6 @@ import com.google.inject.Singleton;
 import me.tassu.neon.api.user.User;
 import me.tassu.neon.common.db.StorageConnector;
 import me.tassu.neon.common.scheduler.Scheduler;
-import me.tassu.neon.common.sync.Synchronizer;
 import me.tassu.neon.common.user.AbstractUserManager;
 import me.tassu.neon.common.user.FakeUser;
 import org.bukkit.Bukkit;
@@ -47,7 +46,6 @@ public class SpigotUserManager extends AbstractUserManager {
 
     @Inject private StorageConnector connector;
     @Inject private Scheduler scheduler;
-    @Inject private Synchronizer synchronizer;
 
     private LoadingCache<UUID, SpigotRealUser> cache = CacheBuilder.newBuilder()
             .maximumSize(Bukkit.getMaxPlayers())
@@ -56,7 +54,7 @@ public class SpigotUserManager extends AbstractUserManager {
             .build(new CacheLoader<UUID, SpigotRealUser>() {
                 @Override
                 public SpigotRealUser load(@NonNull UUID key) {
-                    return new SpigotRealUser(connector, scheduler, synchronizer, key);
+                    return new SpigotRealUser(connector, scheduler, key);
                 }
             });
 

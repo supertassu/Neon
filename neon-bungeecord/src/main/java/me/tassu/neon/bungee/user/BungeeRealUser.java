@@ -27,7 +27,6 @@ package me.tassu.neon.bungee.user;
 
 import me.tassu.neon.common.db.StorageConnector;
 import me.tassu.neon.common.scheduler.Scheduler;
-import me.tassu.neon.common.sync.Synchronizer;
 import me.tassu.neon.common.user.AbstractRealUser;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -40,8 +39,8 @@ public class BungeeRealUser extends AbstractRealUser {
 
     private ProxyServer server = ProxyServer.getInstance();
 
-    public BungeeRealUser(StorageConnector connector, Scheduler scheduler, Synchronizer synchronizer, UUID uuid) {
-        super(connector, scheduler, synchronizer, uuid, ProxyServer.getInstance().getPlayer(uuid) == null
+    public BungeeRealUser(StorageConnector connector, Scheduler scheduler, UUID uuid) {
+        super(connector, scheduler, uuid, ProxyServer.getInstance().getPlayer(uuid) == null
                         ? null : ProxyServer.getInstance().getPlayer(uuid).getName());
     }
 

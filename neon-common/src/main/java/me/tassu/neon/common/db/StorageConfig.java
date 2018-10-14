@@ -56,7 +56,7 @@ public class StorageConfig {
     private String username = "root";
 
     @Setting
-    private String password = "majava";
+    private String password = "";
 
     @Setting(value = "maximum-pool-size", comment = "Sets the maximum size of the MySQL connection pool.\n" +
             " - Basically this value will determine the maximum number of actual\n" +

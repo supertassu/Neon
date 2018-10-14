@@ -32,7 +32,6 @@ import com.google.inject.Inject;
 import me.tassu.neon.api.user.User;
 import me.tassu.neon.common.db.StorageConnector;
 import me.tassu.neon.common.scheduler.Scheduler;
-import me.tassu.neon.common.sync.Synchronizer;
 import me.tassu.neon.common.user.AbstractUserManager;
 import me.tassu.neon.common.user.FakeUser;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -44,7 +43,6 @@ public class BungeeUserFactory extends AbstractUserManager {
 
     @Inject private StorageConnector connector;
     @Inject private Scheduler scheduler;
-    @Inject private Synchronizer synchronizer;
 
     private LoadingCache<UUID, BungeeRealUser> cache = CacheBuilder.newBuilder()
             .weakKeys()
@@ -52,7 +50,7 @@ public class BungeeUserFactory extends AbstractUserManager {
             .build(new CacheLoader<UUID, BungeeRealUser>() {
                 @Override
                 public BungeeRealUser load(@NonNull UUID key) {
-                    return new BungeeRealUser(connector, scheduler, synchronizer, key);
+                    return new BungeeRealUser(connector, scheduler, key);
                 }
             });
 

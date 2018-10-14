@@ -46,7 +46,6 @@ import java.util.stream.Collectors;
 @Singleton
 public class PunishmentHandler {
 
-    @Inject private Platform platform;
     @Inject private MessageConfig locale;
 
     @Inject private PunishmentManager punishmentManager;
@@ -57,7 +56,7 @@ public class PunishmentHandler {
         return onJoin(user);
     }
 
-    public Optional<String> onJoin(User user) {
+    private Optional<String> onJoin(User user) {
         val punishments = punishmentManager.getActivePunishments(user)
                 .stream().filter(it -> it.getType().shouldPreventJoin()).findAny();
         return punishments.map(this::getKickMessage);
@@ -67,18 +66,18 @@ public class PunishmentHandler {
         val message = (punishment.willExpire()
                 ? locale.getLocale().getTempKickMessages()
                 : locale.getLocale().getPermanentKickMessages())
-                .getOrDefault(punishment.getType().getId(), Collections.singletonList("fail"));
-        System.out.println(punishment.getActor());
+                .get(punishment.getType().getId());
+        if (message == null) return null;
 
         return formatMessage(Joiner.on('\n').join(message), punishment);
     }
 
     public List<String> getBroadcast(Punishment punishment) {
         val message = (punishment.willExpire()
-                ? locale.getLocale().getBroadcast().getPermanentPunishmentMessages()
-                : locale.getLocale().getBroadcast().getTempPunishmentMessages())
-                .getOrDefault(punishment.getType().getId(), Collections.singletonList("fail"));
-        System.out.println(punishment.getActor());
+                ? locale.getLocale().getBroadcast().getTempPunishmentMessages()
+                : locale.getLocale().getBroadcast().getPermanentPunishmentMessages())
+                .get(punishment.getType().getId());
+        if (message == null) return null;
 
         return message.stream().map(it -> formatMessage(it, punishment)).collect(Collectors.toList());
     }
@@ -93,7 +92,7 @@ public class PunishmentHandler {
 
     private String getLengthString(Punishment punishment) {
         if (!punishment.willExpire()) return "";
-        return DurationFormatter.getRemaining(punishment.getExpiryDate() - System.currentTimeMillis()); // TODO
+        return DurationFormatter.getRemaining(punishment.getExpiryDate() - System.currentTimeMillis());
     }
 
     private String nullOrEmpty(String in) {

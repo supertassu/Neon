@@ -26,7 +26,6 @@
 package me.tassu.neon.common.db.factory;
 
 import com.zaxxer.hikari.HikariConfig;
-import me.tassu.neon.common.config.NeonConfig;
 
 import java.util.Map;
 import java.util.Set;
@@ -34,10 +33,6 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class MariaDbConnectionFactory extends ConnectionFactory {
-    public MariaDbConnectionFactory(NeonConfig config) {
-        super(config);
-    }
-
     @Override
     public String getImplementationName() {
         return "MariaDB";
@@ -50,7 +45,7 @@ public class MariaDbConnectionFactory extends ConnectionFactory {
 
     @Override
     protected void appendProperties(HikariConfig config) {
-        Set<Map.Entry<String, String>> properties = this.config.getProperties().entrySet();
+        Set<Map.Entry<String, String>> properties = this.config.getConfig().getStorageConfig().getProperties().entrySet();
         if (properties.isEmpty()) {
             return;
         }

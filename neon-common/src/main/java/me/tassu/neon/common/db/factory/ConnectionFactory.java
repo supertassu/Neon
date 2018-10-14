@@ -30,11 +30,9 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.val;
 import me.tassu.neon.common.config.NeonConfig;
-import me.tassu.neon.common.db.StorageConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.sql.Connection;
@@ -47,33 +45,29 @@ import java.util.function.Function;
 public abstract class ConnectionFactory {
 
     @Inject private Logger logger;
+    @Inject protected NeonConfig config;
 
     private HikariDataSource hikari;
 
-    public ConnectionFactory(NeonConfig config) {
-        this.config = config.getConfig().getStorageConfig();
-    }
-
-    protected StorageConfig config;
-
     protected void appendProperties(HikariConfig config) {
-        for (Map.Entry<String, String> property : this.config.getProperties().entrySet()) {
+        for (Map.Entry<String, String> property : this.config.getConfig().getStorageConfig().getProperties().entrySet()) {
             config.addDataSourceProperty(property.getKey(), property.getValue());
         }
     }
 
     protected void appendConfigurationInfo(HikariConfig config) {
-        val addressSplit = this.config.getAddress().split(":");
+        val addressSplit = this.config.getConfig().getStorageConfig().getAddress().split(":");
         val address = addressSplit[0];
         val port = addressSplit.length > 1 ? addressSplit[1] : "3306";
 
         config.setDataSourceClassName(getDriverClass());
         config.addDataSourceProperty("serverName", address);
         config.addDataSourceProperty("port", port);
-        config.addDataSourceProperty("databaseName", this.config.getDatabase());
+        config.addDataSourceProperty("databaseName", this.config.getConfig().getStorageConfig().getDatabase());
 
-        config.setUsername(this.config.getUsername());
-        config.setPassword(this.config.getPassword());
+        System.out.println(this.config.getConfig().getStorageConfig().getPassword());
+        config.setUsername(this.config.getConfig().getStorageConfig().getUsername());
+        config.setPassword(this.config.getConfig().getStorageConfig().getPassword());
     }
 
     public abstract String getImplementationName();
@@ -103,10 +97,10 @@ public abstract class ConnectionFactory {
         appendConfigurationInfo(config);
         appendProperties(config);
 
-        config.setMaximumPoolSize(this.config.getMaxPoolSize());
-        config.setMinimumIdle(this.config.getMinIdleConnections());
-        config.setMaxLifetime(this.config.getMaxLifetime());
-        config.setConnectionTimeout(this.config.getConnectionTimeout());
+        config.setMaximumPoolSize(this.config.getConfig().getStorageConfig().getMaxPoolSize());
+        config.setMinimumIdle(this.config.getConfig().getStorageConfig().getMinIdleConnections());
+        config.setMaxLifetime(this.config.getConfig().getStorageConfig().getMaxLifetime());
+        config.setConnectionTimeout(this.config.getConfig().getStorageConfig().getConnectionTimeout());
 
         // don't perform any initial connection validation - we subsequently call #getConnection
         // to setup the schema anyways

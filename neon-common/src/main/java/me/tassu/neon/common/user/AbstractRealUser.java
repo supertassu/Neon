@@ -31,7 +31,6 @@ import me.tassu.neon.api.user.RealUser;
 import me.tassu.neon.common.db.Schema;
 import me.tassu.neon.common.db.StorageConnector;
 import me.tassu.neon.common.scheduler.Scheduler;
-import me.tassu.neon.common.sync.Synchronizer;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -40,7 +39,6 @@ import java.util.UUID;
 
 public abstract class AbstractRealUser implements RealUser {
 
-    private Synchronizer synchronizer;
     protected Scheduler scheduler;
     private StorageConnector connector;
 
@@ -63,10 +61,9 @@ public abstract class AbstractRealUser implements RealUser {
 
     protected abstract void kick(String reason);
 
-    public AbstractRealUser(StorageConnector connector, Scheduler scheduler, Synchronizer synchronizer, UUID uuid, String name) {
+    public AbstractRealUser(StorageConnector connector, Scheduler scheduler, UUID uuid, String name) {
         this.connector = connector;
         this.scheduler = scheduler;
-        this.synchronizer = synchronizer;
 
         if (name != null) {
             this.name = name;
@@ -112,7 +109,7 @@ public abstract class AbstractRealUser implements RealUser {
     protected void setName(String name) {
         val old = this.name;
         this.name = name;
-        if (!old.equals(name)) updateName(name);
+        if (!name.equals(old)) updateName(name);
     }
 
     @Override

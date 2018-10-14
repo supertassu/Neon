@@ -26,6 +26,7 @@
 package me.tassu.neon.common.config;
 
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import lombok.Getter;
 import me.tassu.neon.common.db.StorageConfig;
 import me.tassu.util.config.AbstractConfig;
@@ -36,6 +37,7 @@ import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
+@Singleton
 public class NeonConfig extends AbstractConfig<NeonConfig> {
 
     public static final int CONFIG_VERSION = 1;

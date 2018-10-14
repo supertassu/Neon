@@ -37,7 +37,9 @@ public class Schema {
             "INSERT INTO {prefix}_punishments (actor_uuid, target_uuid, type, reason, given, expiration) VALUES (?, ?, ?, ?, ?, ?);";
 
     public static final String SELECT_ALL_PUNISHMENTS_FOR_USER =
-            "SELECT actor_uuid, type, reason, given, expiration FROM {prefix}_punishments WHERE target_uuid=? AND revoked IS NULL";
+            "SELECT id, target_uuid, actor_uuid, type, reason, given, expiration, revoked FROM {prefix}_punishments WHERE target_uuid=?";
+    public static final String SELECT_PUNISHMENT_BY_ID =
+            "SELECT id, target_uuid, actor_uuid, type, reason, given, expiration, revoked FROM {prefix}_punishments WHERE id=?";
 
     private Schema() {}
 

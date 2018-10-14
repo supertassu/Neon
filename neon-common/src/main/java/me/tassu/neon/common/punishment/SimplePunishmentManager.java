@@ -46,8 +46,6 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
-import static me.tassu.neon.common.util.ChatColor.color;
-
 public class SimplePunishmentManager implements PunishmentManager {
 
     @Inject private PunishmentHandler handler;
@@ -58,26 +56,44 @@ public class SimplePunishmentManager implements PunishmentManager {
 
     @Override
     public @Nullable Punishment getPunishmentById(long id) {
-        throw new UnsupportedOperationException("Not implemented yet.");
+        try (val connection = connector.getFactory().getConnection()) {
+            try (val statement = connection.prepareStatement(connector.getStatementProcessor().apply(Schema.SELECT_PUNISHMENT_BY_ID))) {
+                statement.setLong(1, id);
+                try (val result = statement.executeQuery()) {
+                    if (result.next()) {
+                        return new SimplePunishment(
+                                manager, UUID.fromString(result.getString("target_uuid")), UUID.fromString(result.getString("actor_uuid")),
+                                getTypeById(result.getString("type")), result.getLong("given"), result.getLong("expiration"),
+                                result.getString("reason")
+                        );
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        return null;
     }
 
     @Override
     public Set<Punishment> getActivePunishments(User user) {
         val data = new HashSet<Punishment>();
         try (val connection = connector.getFactory().getConnection()) {
-            try (val statement = connection.prepareStatement(connector.getStatementProcessor().apply(Schema.SELECT_ALL_PUNISHMENTS_FOR_USER))) {
-                statement.setString(1, user.getUuid().toString());
-                try (val result = statement.executeQuery()) {
-                    while (result.next()) {
-                        val punishment = new SimplePunishment(
-                                manager, user.getUuid(), UUID.fromString(result.getString("actor_uuid")), getTypeById(result.getString("type")),
-                                result.getLong("given"), result.getLong("expiration"), result.getString("reason")
-                        );
+                try (val statement = connection.prepareStatement(connector.getStatementProcessor().apply(Schema.SELECT_ALL_PUNISHMENTS_FOR_USER))) {
+                    statement.setString(1, user.getUuid().toString());
+                    try (val result = statement.executeQuery()) {
+                        while (result.next()) {
+                            if (result.getInt("revoked") == 0) continue; // 0 == null
+                            val punishment = new SimplePunishment(
+                                    manager, user.getUuid(), UUID.fromString(result.getString("actor_uuid")), getTypeById(result.getString("type")),
+                                    result.getLong("given"), result.getLong("expiration"), result.getString("reason")
+                            );
 
-                        if (!punishment.hasExpired()) data.add(punishment);
+                            if (!punishment.hasExpired()) data.add(punishment);
+                        }
                     }
                 }
-            }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -105,11 +121,11 @@ public class SimplePunishmentManager implements PunishmentManager {
                     if (generatedKeys.next()) {
                         val id = generatedKeys.getLong(1);
 
+                        broadcast(punishment, id);
+
                         if (type.shouldKick() || (type.shouldPreventJoin() && target.isOnline())) {
                             target.disconnect(handler.getKickMessage(punishment));
-                            broadcast(punishment, id);
                         } else if (type.shouldPreventJoin()) {
-                            broadcast(punishment, id);
                             synchronizer.sync(target.getUuid());
                         }
                     }

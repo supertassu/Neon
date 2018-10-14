@@ -98,6 +98,8 @@ public abstract class NeonPlugin {
         logger.info("§4== §7Starting scheduler");
         scheduler.boot();
 
+        System.out.println(config.getConfig().getStorageConfig().getPassword());
+
         logger.info("§4== §7Connecting to database");
         connector.startup();
         if (getFactory() == null) {

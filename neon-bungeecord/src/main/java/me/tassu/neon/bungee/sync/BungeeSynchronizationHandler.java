@@ -69,7 +69,6 @@ public class BungeeSynchronizationHandler implements ISynchronizer, Listener {
             if (!(user instanceof RealUser)) return;
             if (!((RealUser) user).isOnline()) return;
 
-
             val ban = punishmentManager.getActivePunishments(user)
                     .stream().filter(it -> it.getType().shouldPreventJoin()).findAny();
             ban.ifPresent(punishment -> ((RealUser) user).disconnect(handler.getKickMessage(punishment)));
@@ -125,6 +124,7 @@ public class BungeeSynchronizationHandler implements ISynchronizer, Listener {
             case "Broadcast":
                 val id = Integer.parseInt(in.readUTF());
                 broadcast(id);
+                break;
             default:
                 logger.warn("Received a message in unknown channel: " + msg);
                 break;

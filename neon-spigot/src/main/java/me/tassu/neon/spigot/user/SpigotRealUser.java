@@ -27,7 +27,6 @@ package me.tassu.neon.spigot.user;
 
 import me.tassu.neon.common.db.StorageConnector;
 import me.tassu.neon.common.scheduler.Scheduler;
-import me.tassu.neon.common.sync.Synchronizer;
 import me.tassu.neon.common.user.AbstractRealUser;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -38,8 +37,8 @@ import static me.tassu.neon.common.util.ChatColor.color;
 
 public class SpigotRealUser extends AbstractRealUser {
 
-    SpigotRealUser(StorageConnector connector, Scheduler scheduler, Synchronizer synchronizer, UUID uuid) {
-        super(connector, scheduler, synchronizer, uuid, Bukkit.getPlayer(uuid) == null ? null : Bukkit.getPlayer(uuid).getName());
+    SpigotRealUser(StorageConnector connector, Scheduler scheduler, UUID uuid) {
+        super(connector, scheduler, uuid, Bukkit.getPlayer(uuid) == null ? null : Bukkit.getPlayer(uuid).getName());
 
         if (this.getName() == null) {
             scheduler.delay(25, () -> {

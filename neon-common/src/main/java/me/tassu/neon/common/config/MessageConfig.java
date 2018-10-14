@@ -28,6 +28,7 @@ package me.tassu.neon.common.config;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import lombok.Getter;
 import me.tassu.neon.api.punishment.SimplePunishmentType;
 import me.tassu.util.config.AbstractConfig;
@@ -41,6 +42,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import java.util.List;
 import java.util.Map;
 
+@Singleton
 public class MessageConfig extends AbstractConfig<MessageConfig> {
 
     @Inject

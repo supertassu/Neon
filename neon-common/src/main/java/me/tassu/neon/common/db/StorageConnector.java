@@ -57,8 +57,7 @@ public class StorageConnector {
     public void startup() {
         if (factory != null) throw new IllegalStateException("already connected");
 
-        run(() -> factory = config.getConfig().getStorageConfig().getType()
-                .getConnectionFactory().getConstructor(NeonConfig.class).newInstance(config));
+        run(() -> factory = config.getConfig().getStorageConfig().getType().getConnectionFactory().newInstance());
         injector.injectMembers(factory);
 
         factory.init();
