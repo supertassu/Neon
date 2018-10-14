@@ -31,6 +31,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.val;
 import me.tassu.neon.api.NeonAPI;
+import me.tassu.neon.common.config.MessageConfig;
 import me.tassu.neon.common.config.NeonConfig;
 import me.tassu.neon.common.db.StorageConnector;
 import me.tassu.neon.common.db.factory.ConnectionFactory;
@@ -50,6 +51,7 @@ public abstract class NeonPlugin {
     @Inject private Platform platform;
     @Inject private Scheduler scheduler;
 
+    @Inject private MessageConfig locale;
     @Inject private NeonConfig config;
 
     @Inject private StorageConnector connector;
@@ -79,6 +81,9 @@ public abstract class NeonPlugin {
 
         logger.info("§4== §7Loading configuration");
         run(() -> {
+            locale.load();
+            locale.save();
+
             config.load();
             config.save();
         });

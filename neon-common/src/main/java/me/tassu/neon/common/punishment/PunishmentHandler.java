@@ -25,13 +25,18 @@
 
 package me.tassu.neon.common.punishment;
 
+import com.google.common.base.Joiner;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import lombok.val;
+import me.tassu.neon.api.punishment.Punishment;
 import me.tassu.neon.api.punishment.PunishmentManager;
 import me.tassu.neon.api.user.UserManager;
+import me.tassu.neon.common.config.MessageConfig;
 import me.tassu.neon.common.plugin.Platform;
+import me.tassu.neon.common.util.DurationFormatter;
 
+import java.util.Collections;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -39,6 +44,8 @@ import java.util.UUID;
 public class PunishmentHandler {
 
     @Inject private Platform platform;
+    @Inject private MessageConfig locale;
+
     @Inject private PunishmentManager punishmentManager;
     @Inject private UserManager userManager;
 
@@ -48,8 +55,31 @@ public class PunishmentHandler {
         val user = userManager.getUser(uuid);
         val punishments = punishmentManager.getActivePunishments(user)
                 .stream().filter(it -> it.getType().shouldPreventJoin()).findAny();
-        return punishments.map(Object::toString);
+        return punishments.map(this::getKickMessage);
+    }
 
+    private String getKickMessage(Punishment punishment) {
+        val message = (punishment.willExpire()
+                ? locale.getLocale().getTempKickMessages()
+                : locale.getLocale().getPermanentKickMessages())
+                .getOrDefault(punishment.getType().getId(), Collections.singletonList("fail"));
+        System.out.println(punishment.getActor());
+
+        return Joiner.on('\n')
+                .join(message)
+                .replace("{{actor}}", nullOrEmpty(punishment.getActor().getName()))
+                .replace("{{reason}}", nullOrEmpty(punishment.getReason()))
+                .replace("{{expires}}", getLengthString(punishment));
+    }
+
+    private String getLengthString(Punishment punishment) {
+        if (!punishment.willExpire()) return "";
+        return DurationFormatter.getRemaining(punishment.getExpiryDate() - System.currentTimeMillis()); // TODO
+    }
+
+    private String nullOrEmpty(String in) {
+        if (in == null) return "";
+        return in;
     }
 
 }

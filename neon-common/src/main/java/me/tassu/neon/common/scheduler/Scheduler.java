@@ -72,4 +72,11 @@ public interface Scheduler {
      */
     void async(Runnable runnable);
 
+    /**
+     * Runs taks off the main thread specified amount of ticks later.
+     * @param ticks ticks
+     * @param runnable a task
+     */
+    void delay(int ticks, Runnable runnable);
+
 }

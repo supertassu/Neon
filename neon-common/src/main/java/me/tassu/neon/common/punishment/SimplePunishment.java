@@ -67,6 +67,11 @@ public class SimplePunishment implements Punishment {
         return System.currentTimeMillis() - expiryDate > 0;
     }
 
+    @Override
+    public boolean willExpire() {
+        return expiryDate != -1;
+    }
+
     @Getter
     private PunishmentType type;
 

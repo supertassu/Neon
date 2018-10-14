@@ -7,4 +7,8 @@ dependencies {
     compile group: 'com.zaxxer', name: 'HikariCP', version: '3.2.0'
     compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25'
     compile group: 'com.google.inject', name: 'guice', version: '4.2.1'
+
+    testCompile 'org.junit.jupiter:junit-jupiter-api:5.3.1'
+    testCompile 'org.junit.jupiter:junit-jupiter-params:5.3.1'
+    testRuntime 'org.junit.jupiter:junit-jupiter-engine:5.3.1'
 }

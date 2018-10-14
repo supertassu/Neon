@@ -37,6 +37,14 @@ public class SpigotRealUser extends AbstractRealUser {
 
     public SpigotRealUser(StorageConnector connector, Scheduler scheduler, UUID uuid) {
         super(connector, scheduler, uuid, Bukkit.getPlayer(uuid) == null ? null : Bukkit.getPlayer(uuid).getName());
+
+        if (this.getName() == null) {
+            scheduler.delay(25, () -> {
+                if (Bukkit.getPlayer(uuid) != null) {
+                    this.setName(Bukkit.getPlayer(uuid).getName());
+                }
+            });
+        }
     }
 
     private OfflinePlayer bukkit() {

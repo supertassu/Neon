@@ -25,18 +25,27 @@
 
 package me.tassu.neon.common.config;
 
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Lists;
 import com.google.inject.Inject;
+import lombok.Getter;
+import me.tassu.neon.api.punishment.SimplePunishmentType;
 import me.tassu.util.config.AbstractConfig;
 import me.tassu.util.config.ConfigFactory;
 import ninja.leaping.configurate.objectmapping.ObjectMapper;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
+import ninja.leaping.configurate.objectmapping.Setting;
+import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 import org.checkerframework.checker.nullness.qual.NonNull;
+
+import java.util.List;
+import java.util.Map;
 
 public class MessageConfig extends AbstractConfig<MessageConfig> {
 
     @Inject
     public MessageConfig(@NonNull ConfigFactory factory) {
-        // get configuration loader for "neon.conf"
+        // get configuration loader for "locale.conf"
         loader = factory.getLoader("locale.conf");
 
         try {
@@ -45,6 +54,46 @@ public class MessageConfig extends AbstractConfig<MessageConfig> {
         } catch (ObjectMappingException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Setting private Neon neon = new Neon();
+
+    @ConfigSerializable
+    private static class Neon {
+        @Setting
+        private Locale locale = new Locale();
+    }
+
+    public Locale getLocale() {
+        return neon.locale;
+    }
+
+    @ConfigSerializable
+    @Getter
+    public static class Locale {
+
+        @Setting("kick.permanent")
+        private Map<String, List<String>> permanentKickMessages = ImmutableMap.<String, List<String>>builder()
+                .put(SimplePunishmentType.BAN.getId(), Lists.newArrayList(
+                        "&8&m   &8[&r You are banned from this server! &8]&m   &r",
+                        "",
+                        "&6&lBanned by &7{{actor}}",
+                        "&6&lReason: &7{{reason}}",
+                        "&7This ban will not expire.", "",
+                        "&7You may &6appeal&7 at&r www.example.com/appeal&7."))
+                .build();
+
+        @Setting("kick.temp")
+        private Map<String, List<String>> tempKickMessages = ImmutableMap.<String, List<String>>builder()
+                .put(SimplePunishmentType.BAN.getId(), Lists.newArrayList(
+                        "&8&m   &8[&r You are banned from this server! &8]&m   &r",
+                        "",
+                        "&6&lBanned by &7{{actor}}",
+                        "&6&lReason: &7{{reason}}",
+                        "&6&lExpires in &7{{expires}}.", "",
+                        "&7You may &6appeal&7 at&r www.example.com/appeal&7."))
+                .build();
+
     }
 
 }

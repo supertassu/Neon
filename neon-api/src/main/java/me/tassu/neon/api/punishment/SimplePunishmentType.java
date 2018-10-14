@@ -25,28 +25,28 @@
 
 package me.tassu.neon.api.punishment;
 
-import lombok.Getter;
-
 public enum SimplePunishmentType implements PunishmentType {
 
-    BAN("ban", true, false, true),
-    MUTE("mute", false, true, true),
-    KICK("kick", false, false, false)
+    BAN(true, false, true),
+    MUTE(false, true, true),
+    KICK(false, false, false)
 
     ;
 
-    SimplePunishmentType(String id, boolean shouldPreventJoin, boolean shouldPreventChat, boolean isRemovable) {
-        this.id = id;
+    SimplePunishmentType(boolean shouldPreventJoin, boolean shouldPreventChat, boolean isRemovable) {
         this.shouldPreventJoin = shouldPreventJoin;
         this.shouldPreventChat = shouldPreventChat;
         this.isRemovable = isRemovable;
     }
 
-    @Getter private String id;
-
     private boolean shouldPreventJoin;
     private boolean shouldPreventChat;
     private boolean isRemovable;
+
+    @Override
+    public String getId() {
+        return name();
+    }
 
     @Override
     public boolean shouldPreventJoin() {

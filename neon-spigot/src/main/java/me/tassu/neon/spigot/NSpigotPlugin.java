@@ -70,7 +70,7 @@ public final class NSpigotPlugin extends NeonPlugin {
         manager.registerEvents(listener, plugin);
 
         System.out.println(punishmentManager.createPunishment(userManager.getUser(UUID.fromString("c19bbd36-3fd0-4b30-b40c-89f70e989dcb")),
-                userManager.getConsoleUser(), -1, "foo bar", SimplePunishmentType.BAN));
+                userManager.getConsoleUser(), System.currentTimeMillis() + 3600000, "Being a great developer", SimplePunishmentType.BAN));
     }
 
     @Override

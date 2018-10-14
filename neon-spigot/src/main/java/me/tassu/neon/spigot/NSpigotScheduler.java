@@ -101,8 +101,14 @@ public class NSpigotScheduler implements Scheduler {
         return task.getTaskId() != -1 && getTask(task.getTaskId(), task.isAsync()) != null;
     }
 
+    @Override
+    public void delay(int ticks, Runnable runnable) {
+        scheduler.runTaskLaterAsynchronously(plugin, runnable, ticks);
+    }
+
     private Field runnerField;
 
+    @SuppressWarnings("unchecked")
     private BukkitTask getTask(int taskId, boolean isAsync) {
         try {
             if (runnerField == null) {
@@ -116,10 +122,8 @@ public class NSpigotScheduler implements Scheduler {
             }
 
             if (isAsync) {
-                //noinspection unchecked
                 return ((Map<Integer, BukkitTask>) runnerField.get(asyncScheduler)).get(taskId);
             } else {
-                //noinspection unchecked
                 return ((Map<Integer, BukkitTask>) runnerField.get(scheduler)).get(taskId);
             }
         } catch (Exception e) {

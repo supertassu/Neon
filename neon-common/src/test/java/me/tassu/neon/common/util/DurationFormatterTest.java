@@ -23,30 +23,26 @@
  * SOFTWARE.
  */
 
-package me.tassu.neon.spigot;
+package me.tassu.neon.common.util;
 
-import com.google.inject.Inject;
-import lombok.val;
-import me.tassu.neon.common.punishment.PunishmentHandler;
-import org.bukkit.ChatColor;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
+import org.junit.jupiter.api.Test;
 
-public class NSpigotListener implements Listener {
+import static me.tassu.neon.common.util.DurationFormatter.getRemaining;
+import static org.junit.jupiter.api.Assertions.*;
 
-    @Inject private PunishmentHandler handler;
+class DurationFormatterTest {
 
-    @EventHandler
-    public void onAsyncPlayerPreLogin(AsyncPlayerPreLoginEvent event) {
-        val kick = handler.onJoin(event.getUniqueId());
-        if (kick.isPresent()) {
-            event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_BANNED);
-            event.setKickMessage(color(kick.orElse("no")));
-        }
-    }
-
-    private String color(String s) {
-        return ChatColor.translateAlternateColorCodes('&', s);
+    @Test
+    void testGetRemaining() {
+        assertEquals("37.0sec", getRemaining(37000));
+        assertEquals("37.0sec", getRemaining(37020));
+        assertEquals("37.1sec", getRemaining(37100));
+        assertEquals("1min 0sec", getRemaining(60000));
+        assertEquals("1min 0sec", getRemaining(60000));
+        assertEquals("5min 37sec", getRemaining(337000));
+        assertEquals("5min 37sec", getRemaining(337900));
+        assertEquals("59min 59sec", getRemaining(3599999));
+        assertEquals("1h 0min 0sec", getRemaining(3600000));
+        assertEquals("1h 5min 37sec", getRemaining(3937900));
     }
 }

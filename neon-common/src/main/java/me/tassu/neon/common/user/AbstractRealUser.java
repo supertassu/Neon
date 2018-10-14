@@ -39,24 +39,33 @@ import java.util.UUID;
 
 public abstract class AbstractRealUser implements RealUser {
 
+    private Scheduler scheduler;
+    private StorageConnector connector;
+
     private UUID uuid;
     private String name = null;
 
+    private void updateName(String name) {
+        scheduler.async(() -> {
+            try (val connection = connector.getFactory().getConnection()) {
+                try (val statement = connection.prepareStatement(connector.getStatementProcessor().apply(Schema.ADD_OR_UPDATE_USER))) {
+                    statement.setString(1, uuid.toString());
+                    statement.setString(2, name);
+                    statement.setString(3, name);
+                }
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        });
+    }
+
     public AbstractRealUser(StorageConnector connector, Scheduler scheduler, UUID uuid, String name) {
+        this.connector = connector;
+        this.scheduler = scheduler;
+
         if (name != null) {
             this.name = name;
-
-            scheduler.async(() -> {
-                try (val connection = connector.getFactory().getConnection()) {
-                    try (val statement = connection.prepareStatement(connector.getStatementProcessor().apply(Schema.ADD_OR_UPDATE_USER))) {
-                        statement.setString(1, uuid.toString());
-                        statement.setString(2, name);
-                        statement.setString(3, name);
-                    }
-                } catch (SQLException e) {
-                    throw new RuntimeException(e);
-                }
-            });
+            updateName(name);
         } else {
             scheduler.async(() -> {
                 try (val connection = connector.getFactory().getConnection()) {
@@ -86,6 +95,12 @@ public abstract class AbstractRealUser implements RealUser {
     @Override
     public @Nullable String getName() {
         return name;
+    }
+
+    public void setName(String name) {
+        val old = this.name;
+        this.name = name;
+        if (!old.equals(name)) updateName(name);
     }
 
     @Override

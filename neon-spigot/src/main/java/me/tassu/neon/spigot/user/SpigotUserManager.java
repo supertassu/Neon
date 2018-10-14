@@ -73,7 +73,7 @@ public class SpigotUserManager implements UserManager {
 
     @Override
     public @NonNull User getUser(@NonNull UUID uuid) {
-        if (uuid == console.getUuid()) return console;
+        if (uuid.compareTo(console.getUuid()) == 0) return console;
         return cache.getUnchecked(uuid);
     }
 

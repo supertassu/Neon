@@ -40,6 +40,7 @@ public interface Punishment {
     long getExpiryDate();
 
     boolean hasExpired();
+    boolean willExpire();
 
     @NonNull PunishmentType getType();
 
