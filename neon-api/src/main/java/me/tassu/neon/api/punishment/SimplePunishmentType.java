@@ -27,21 +27,23 @@ package me.tassu.neon.api.punishment;
 
 public enum SimplePunishmentType implements PunishmentType {
 
-    BAN(true, false, true),
-    MUTE(false, true, true),
-    KICK(false, false, false)
+    BAN(true, false, true, false),
+    MUTE(false, true, true, false),
+    KICK(false, false, false, true)
 
     ;
 
-    SimplePunishmentType(boolean shouldPreventJoin, boolean shouldPreventChat, boolean isRemovable) {
+    SimplePunishmentType(boolean shouldPreventJoin, boolean shouldPreventChat, boolean isRemovable, boolean shouldKick) {
         this.shouldPreventJoin = shouldPreventJoin;
         this.shouldPreventChat = shouldPreventChat;
         this.isRemovable = isRemovable;
+        this.shouldKick = shouldKick;
     }
 
     private boolean shouldPreventJoin;
     private boolean shouldPreventChat;
     private boolean isRemovable;
+    private boolean shouldKick;
 
     @Override
     public String getId() {
@@ -56,6 +58,11 @@ public enum SimplePunishmentType implements PunishmentType {
     @Override
     public boolean shouldPreventChat() {
         return shouldPreventChat;
+    }
+
+    @Override
+    public boolean shouldKick() {
+        return shouldKick;
     }
 
     @Override

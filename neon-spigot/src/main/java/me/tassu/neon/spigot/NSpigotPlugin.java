@@ -47,9 +47,6 @@ public final class NSpigotPlugin extends NeonPlugin {
     @Inject private PluginManager manager;
     @Inject private NSpigotListener listener;
 
-    @Inject private UserManager userManager;
-    @Inject private PunishmentManager punishmentManager;
-
     public NSpigotPlugin(@NonNull NSpigotBootstrap bootstrap) {
         super(bootstrap);
 
@@ -69,8 +66,7 @@ public final class NSpigotPlugin extends NeonPlugin {
         scheduler.schedule(housekeeper);
         manager.registerEvents(listener, plugin);
 
-        System.out.println(punishmentManager.createPunishment(userManager.getUser(UUID.fromString("c19bbd36-3fd0-4b30-b40c-89f70e989dcb")),
-                userManager.getConsoleUser(), System.currentTimeMillis() + 3600000, "Being a great developer", SimplePunishmentType.BAN));
+        System.out.println();
     }
 
     @Override

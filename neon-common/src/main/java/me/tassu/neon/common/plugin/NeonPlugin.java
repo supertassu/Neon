@@ -36,6 +36,7 @@ import me.tassu.neon.common.config.NeonConfig;
 import me.tassu.neon.common.db.StorageConnector;
 import me.tassu.neon.common.db.factory.ConnectionFactory;
 import me.tassu.neon.common.scheduler.Scheduler;
+import me.tassu.neon.common.sync.Synchronizer;
 import me.tassu.util.ArrayUtil;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -50,6 +51,7 @@ public abstract class NeonPlugin {
     @Inject private Logger logger;
     @Inject private Platform platform;
     @Inject private Scheduler scheduler;
+    @Inject private Synchronizer synchronizer;
 
     @Inject private MessageConfig locale;
     @Inject private NeonConfig config;
@@ -119,12 +121,16 @@ public abstract class NeonPlugin {
         connector.init();
         logger.info("§4=== §7Database is good to go!");
 
+        logger.info("§4=== §7Starting synchronizer");
+        synchronizer.setup();
+
         logger.info("§4= §7Neon should be good to go. Took §c" + (System.currentTimeMillis() - startTime) + "ms§7.");
     }
 
     public final void shutdown() {
         if (scheduler != null) scheduler.shutdown();
         if (connector != null) connector.teardown();
+        if (synchronizer != null) synchronizer.close();
 
         if (config != null) run(() -> config.save());
     }

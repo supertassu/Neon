@@ -30,6 +30,8 @@ import com.google.inject.Singleton;
 import me.tassu.neon.common.plugin.Platform;
 import org.bukkit.Bukkit;
 
+import static me.tassu.neon.common.util.ChatColor.color;
+
 @Singleton
 public class NSpigotPlatform implements Platform {
 
@@ -58,5 +60,10 @@ public class NSpigotPlatform implements Platform {
     @Override
     public boolean isAsync() {
         return !Bukkit.isPrimaryThread();
+    }
+
+    @Override
+    public void broadcast(String message) {
+        Bukkit.getServer().broadcastMessage(color(message));
     }
 }

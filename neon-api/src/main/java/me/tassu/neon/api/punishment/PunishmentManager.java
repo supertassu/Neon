@@ -26,6 +26,7 @@
 package me.tassu.neon.api.punishment;
 
 import lombok.NonNull;
+import me.tassu.neon.api.user.RealUser;
 import me.tassu.neon.api.user.User;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -36,6 +37,9 @@ import java.util.Set;
  */
 public interface PunishmentManager {
 
+    @Nullable
+    Punishment getPunishmentById(long id);
+
     @NonNull
     Set<Punishment> getActivePunishments(@NonNull User user);
 
@@ -43,6 +47,6 @@ public interface PunishmentManager {
     PunishmentType getTypeById(@NonNull String id);
 
     @NonNull
-    Punishment createPunishment(User target, User actor, long expiry, String reason, PunishmentType type);
+    Punishment createPunishment(RealUser target, User actor, long expiry, String reason, PunishmentType type);
 
 }

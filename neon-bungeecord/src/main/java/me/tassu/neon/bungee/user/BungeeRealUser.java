@@ -23,44 +23,38 @@
  * SOFTWARE.
  */
 
-package me.tassu.neon.spigot.user;
+package me.tassu.neon.bungee.user;
 
 import me.tassu.neon.common.db.StorageConnector;
 import me.tassu.neon.common.scheduler.Scheduler;
 import me.tassu.neon.common.sync.Synchronizer;
 import me.tassu.neon.common.user.AbstractRealUser;
-import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
+import net.md_5.bungee.api.ProxyServer;
+import net.md_5.bungee.api.chat.TextComponent;
 
 import java.util.UUID;
 
 import static me.tassu.neon.common.util.ChatColor.color;
 
-public class SpigotRealUser extends AbstractRealUser {
+public class BungeeRealUser extends AbstractRealUser {
 
-    SpigotRealUser(StorageConnector connector, Scheduler scheduler, Synchronizer synchronizer, UUID uuid) {
-        super(connector, scheduler, synchronizer, uuid, Bukkit.getPlayer(uuid) == null ? null : Bukkit.getPlayer(uuid).getName());
+    private ProxyServer server = ProxyServer.getInstance();
 
-        if (this.getName() == null) {
-            scheduler.delay(25, () -> {
-                if (Bukkit.getPlayer(uuid) != null) {
-                    this.setName(Bukkit.getPlayer(uuid).getName());
-                }
-            });
+    public BungeeRealUser(StorageConnector connector, Scheduler scheduler, Synchronizer synchronizer, UUID uuid) {
+        super(connector, scheduler, synchronizer, uuid, ProxyServer.getInstance().getPlayer(uuid) == null
+                        ? null : ProxyServer.getInstance().getPlayer(uuid).getName());
+    }
+
+    @Override
+    protected void kick(String reason) {
+        if (isOnline()) {
+            server.getPlayer(getUuid()).disconnect(TextComponent.fromLegacyText(color(reason)));
         }
     }
 
     @Override
-    public void kick(String reason) {
-        scheduler.sync(() -> bukkit().getPlayer().kickPlayer(color(reason)));
-    }
-
-    private OfflinePlayer bukkit() {
-        return Bukkit.getOfflinePlayer(getUuid());
-    }
-
-    @Override
     public boolean isOnline() {
-        return bukkit().isOnline();
+        return server.getPlayer(getUuid()) != null;
     }
+
 }

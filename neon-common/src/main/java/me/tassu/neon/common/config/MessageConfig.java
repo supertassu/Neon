@@ -72,6 +72,26 @@ public class MessageConfig extends AbstractConfig<MessageConfig> {
     @Getter
     public static class Locale {
 
+        @Setting
+        private Broadcast broadcast = new Broadcast();
+
+        @ConfigSerializable
+        @Getter
+        public static class Broadcast {
+            @Setting("permanent")
+            private Map<String, List<String>> permanentPunishmentMessages = ImmutableMap.<String, List<String>>builder()
+                    .put(SimplePunishmentType.BAN.getId(), Lists.newArrayList(
+                            "&e&m=&r &6&l{{target}}&7 was banned by &6&l{{actor}}&7 for &e{{reason}}&7."))
+                    .build();
+
+            @Setting("temp")
+            private Map<String, List<String>> tempPunishmentMessages = ImmutableMap.<String, List<String>>builder()
+                    .put(SimplePunishmentType.BAN.getId(), Lists.newArrayList(
+                            "&e&m=&r &6&l{{target}}&7 was banned by &6&l{{actor}}&7 for &e{{reason}}&7.",
+                            "&e&m==&r &6&lExpires in &7{{expires}}"))
+                    .build();
+        }
+
         @Setting("kick.permanent")
         private Map<String, List<String>> permanentKickMessages = ImmutableMap.<String, List<String>>builder()
                 .put(SimplePunishmentType.BAN.getId(), Lists.newArrayList(

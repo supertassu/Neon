@@ -23,44 +23,52 @@
  * SOFTWARE.
  */
 
-package me.tassu.neon.spigot.user;
+package me.tassu.neon.common.user;
 
+import com.google.inject.Inject;
+import lombok.val;
+import me.tassu.neon.api.user.User;
+import me.tassu.neon.api.user.UserManager;
+import me.tassu.neon.common.db.Schema;
 import me.tassu.neon.common.db.StorageConnector;
 import me.tassu.neon.common.scheduler.Scheduler;
 import me.tassu.neon.common.sync.Synchronizer;
-import me.tassu.neon.common.user.AbstractRealUser;
-import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
+import java.sql.SQLException;
 import java.util.UUID;
 
-import static me.tassu.neon.common.util.ChatColor.color;
+public abstract class AbstractUserManager implements UserManager {
 
-public class SpigotRealUser extends AbstractRealUser {
+    private StorageConnector connector;
 
-    SpigotRealUser(StorageConnector connector, Scheduler scheduler, Synchronizer synchronizer, UUID uuid) {
-        super(connector, scheduler, synchronizer, uuid, Bukkit.getPlayer(uuid) == null ? null : Bukkit.getPlayer(uuid).getName());
+    public AbstractUserManager(StorageConnector connector) {
+        this.connector = connector;
+    }
 
-        if (this.getName() == null) {
-            scheduler.delay(25, () -> {
-                if (Bukkit.getPlayer(uuid) != null) {
-                    this.setName(Bukkit.getPlayer(uuid).getName());
+    @Override
+    public @Nullable User getUser(@NonNull String name) {
+        String uuid = null;
+
+        try (val connection = connector.getFactory().getConnection()) {
+            try (val statement = connection.prepareStatement(connector.getStatementProcessor().apply(Schema.SELECT_USER_BY_NAME))) {
+                statement.setString(1, name);
+                try (val result = statement.executeQuery()) {
+                    if (result.next()) {
+                        uuid = result.getString("uuid");
+                    }
                 }
-            });
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
+
+        if (uuid != null) {
+            return getUser(UUID.fromString(uuid));
+        }
+
+        return null;
     }
 
-    @Override
-    public void kick(String reason) {
-        scheduler.sync(() -> bukkit().getPlayer().kickPlayer(color(reason)));
-    }
-
-    private OfflinePlayer bukkit() {
-        return Bukkit.getOfflinePlayer(getUuid());
-    }
-
-    @Override
-    public boolean isOnline() {
-        return bukkit().isOnline();
-    }
 }

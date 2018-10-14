@@ -71,6 +71,7 @@ public abstract class ConnectionFactory {
         config.addDataSourceProperty("serverName", address);
         config.addDataSourceProperty("port", port);
         config.addDataSourceProperty("databaseName", this.config.getDatabase());
+
         config.setUsername(this.config.getUsername());
         config.setPassword(this.config.getPassword());
     }

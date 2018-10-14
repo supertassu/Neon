@@ -23,44 +23,14 @@
  * SOFTWARE.
  */
 
-package me.tassu.neon.spigot.user;
-
-import me.tassu.neon.common.db.StorageConnector;
-import me.tassu.neon.common.scheduler.Scheduler;
-import me.tassu.neon.common.sync.Synchronizer;
-import me.tassu.neon.common.user.AbstractRealUser;
-import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
+package me.tassu.neon.common.sync;
 
 import java.util.UUID;
 
-import static me.tassu.neon.common.util.ChatColor.color;
+public interface ISynchronizer {
+    default void open() {}
+    default void close() {}
 
-public class SpigotRealUser extends AbstractRealUser {
-
-    SpigotRealUser(StorageConnector connector, Scheduler scheduler, Synchronizer synchronizer, UUID uuid) {
-        super(connector, scheduler, synchronizer, uuid, Bukkit.getPlayer(uuid) == null ? null : Bukkit.getPlayer(uuid).getName());
-
-        if (this.getName() == null) {
-            scheduler.delay(25, () -> {
-                if (Bukkit.getPlayer(uuid) != null) {
-                    this.setName(Bukkit.getPlayer(uuid).getName());
-                }
-            });
-        }
-    }
-
-    @Override
-    public void kick(String reason) {
-        scheduler.sync(() -> bukkit().getPlayer().kickPlayer(color(reason)));
-    }
-
-    private OfflinePlayer bukkit() {
-        return Bukkit.getOfflinePlayer(getUuid());
-    }
-
-    @Override
-    public boolean isOnline() {
-        return bukkit().isOnline();
-    }
+    void sync(UUID uuid);
+    void broadcast(long id);
 }

@@ -23,44 +23,55 @@
  * SOFTWARE.
  */
 
-package me.tassu.neon.spigot.user;
+package me.tassu.neon.bungee.user;
 
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
+import com.google.inject.Inject;
+import me.tassu.neon.api.user.User;
 import me.tassu.neon.common.db.StorageConnector;
 import me.tassu.neon.common.scheduler.Scheduler;
 import me.tassu.neon.common.sync.Synchronizer;
-import me.tassu.neon.common.user.AbstractRealUser;
-import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
+import me.tassu.neon.common.user.AbstractUserManager;
+import me.tassu.neon.common.user.FakeUser;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
+import java.time.Duration;
 import java.util.UUID;
 
-import static me.tassu.neon.common.util.ChatColor.color;
+public class BungeeUserFactory extends AbstractUserManager {
 
-public class SpigotRealUser extends AbstractRealUser {
+    @Inject private StorageConnector connector;
+    @Inject private Scheduler scheduler;
+    @Inject private Synchronizer synchronizer;
 
-    SpigotRealUser(StorageConnector connector, Scheduler scheduler, Synchronizer synchronizer, UUID uuid) {
-        super(connector, scheduler, synchronizer, uuid, Bukkit.getPlayer(uuid) == null ? null : Bukkit.getPlayer(uuid).getName());
-
-        if (this.getName() == null) {
-            scheduler.delay(25, () -> {
-                if (Bukkit.getPlayer(uuid) != null) {
-                    this.setName(Bukkit.getPlayer(uuid).getName());
+    private LoadingCache<UUID, BungeeRealUser> cache = CacheBuilder.newBuilder()
+            .weakKeys()
+            .expireAfterAccess(Duration.ofMinutes(15))
+            .build(new CacheLoader<UUID, BungeeRealUser>() {
+                @Override
+                public BungeeRealUser load(@NonNull UUID key) {
+                    return new BungeeRealUser(connector, scheduler, synchronizer, key);
                 }
             });
-        }
+
+    private FakeUser console = new FakeUser();
+
+    @Inject
+    public BungeeUserFactory(StorageConnector connector) {
+        super(connector);
     }
 
     @Override
-    public void kick(String reason) {
-        scheduler.sync(() -> bukkit().getPlayer().kickPlayer(color(reason)));
-    }
-
-    private OfflinePlayer bukkit() {
-        return Bukkit.getOfflinePlayer(getUuid());
+    public @NonNull User getConsoleUser() {
+        return console;
     }
 
     @Override
-    public boolean isOnline() {
-        return bukkit().isOnline();
+    public @NonNull User getUser(@NonNull UUID uuid) {
+        if (uuid.compareTo(console.getUuid()) == 0) return console;
+        return cache.getUnchecked(uuid);
     }
+
 }

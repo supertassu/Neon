@@ -31,14 +31,17 @@ import com.google.inject.Singleton;
 import lombok.val;
 import me.tassu.neon.api.punishment.Punishment;
 import me.tassu.neon.api.punishment.PunishmentManager;
+import me.tassu.neon.api.user.User;
 import me.tassu.neon.api.user.UserManager;
 import me.tassu.neon.common.config.MessageConfig;
 import me.tassu.neon.common.plugin.Platform;
 import me.tassu.neon.common.util.DurationFormatter;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Singleton
 public class PunishmentHandler {
@@ -50,23 +53,39 @@ public class PunishmentHandler {
     @Inject private UserManager userManager;
 
     public Optional<String> onJoin(UUID uuid) {
-        if (!platform.isAsync()) throw new IllegalStateException("do this async please");
-
         val user = userManager.getUser(uuid);
+        return onJoin(user);
+    }
+
+    public Optional<String> onJoin(User user) {
         val punishments = punishmentManager.getActivePunishments(user)
                 .stream().filter(it -> it.getType().shouldPreventJoin()).findAny();
         return punishments.map(this::getKickMessage);
     }
 
-    private String getKickMessage(Punishment punishment) {
+    public String getKickMessage(Punishment punishment) {
         val message = (punishment.willExpire()
                 ? locale.getLocale().getTempKickMessages()
                 : locale.getLocale().getPermanentKickMessages())
                 .getOrDefault(punishment.getType().getId(), Collections.singletonList("fail"));
         System.out.println(punishment.getActor());
 
-        return Joiner.on('\n')
-                .join(message)
+        return formatMessage(Joiner.on('\n').join(message), punishment);
+    }
+
+    public List<String> getBroadcast(Punishment punishment) {
+        val message = (punishment.willExpire()
+                ? locale.getLocale().getBroadcast().getPermanentPunishmentMessages()
+                : locale.getLocale().getBroadcast().getTempPunishmentMessages())
+                .getOrDefault(punishment.getType().getId(), Collections.singletonList("fail"));
+        System.out.println(punishment.getActor());
+
+        return message.stream().map(it -> formatMessage(it, punishment)).collect(Collectors.toList());
+    }
+
+    private String formatMessage(String message, Punishment punishment) {
+        return message
+                .replace("{{target}}", nullOrEmpty(punishment.getTarget().getName()))
                 .replace("{{actor}}", nullOrEmpty(punishment.getActor().getName()))
                 .replace("{{reason}}", nullOrEmpty(punishment.getReason()))
                 .replace("{{expires}}", getLengthString(punishment));

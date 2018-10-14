@@ -31,6 +31,6 @@ public interface PunishmentType {
 
     boolean shouldPreventJoin();
     boolean shouldPreventChat();
+    boolean shouldKick();
     boolean isRemovable();
-
 }

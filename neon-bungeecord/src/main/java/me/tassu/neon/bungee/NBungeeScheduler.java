@@ -23,59 +23,70 @@
  * SOFTWARE.
  */
 
-package me.tassu.neon.spigot;
+package me.tassu.neon.bungee;
 
-import com.google.inject.AbstractModule;
-import me.tassu.neon.api.user.UserManager;
-import me.tassu.neon.common.plugin.NeonBootstrap;
+import com.google.inject.Inject;
 import me.tassu.neon.common.plugin.Platform;
 import me.tassu.neon.common.scheduler.Scheduler;
-import me.tassu.neon.common.sync.SynchronizerFactory;
-import me.tassu.neon.spigot.sync.NSpigotSynchronizerFactory;
-import me.tassu.neon.spigot.user.SpigotUserManager;
-import me.tassu.util.spigot.SimplePluginModule;
-import org.bukkit.plugin.java.JavaPlugin;
+import me.tassu.neon.common.scheduler.Task;
+import net.md_5.bungee.api.ProxyServer;
+import net.md_5.bungee.api.scheduler.TaskScheduler;
 
-public final class NSpigotBootstrap extends JavaPlugin implements NeonBootstrap {
+import java.util.concurrent.TimeUnit;
 
-    private NSpigotPlugin plugin;
+public class NBungeeScheduler implements Scheduler {
 
-    @Override
-    public void onEnable() {
-        plugin = new NSpigotPlugin(this);
-        plugin.startup();
+    @Inject private Platform platform;
+    @Inject private NBungeeBootstrap plugin;
+
+    private TaskScheduler scheduler;
+
+    public NBungeeScheduler() {
+        this.scheduler = ProxyServer.getInstance().getScheduler();
     }
 
     @Override
-    public void onDisable() {
-        plugin.shutdown();
+    public void boot() {}
+
+    @Override
+    public void shutdown() {
+        scheduler.cancel(plugin);
     }
 
     @Override
-    public AbstractModule[] getPlatformSpecificModules() {
-        return new AbstractModule[] {
-                new SimplePluginModule<>(NSpigotBootstrap.class, this),
-                new NeonSpigotModule(this)
-        };
+    public boolean isScheduled(Task task) {
+        return false; // TODO
     }
 
     @Override
-    public Class<? extends Platform> getPlatform() {
-        return NSpigotPlatform.class;
+    public void schedule(Task task) {
+        if (task.getTaskId() != -1) {
+            throw new IllegalArgumentException("already scheduled");
+        }
+
+        task.setTaskId(scheduler.schedule(plugin, task, task.getDelay() * 50,
+                        task.getRepeat() * 50, TimeUnit.MILLISECONDS).getId());
+
     }
 
     @Override
-    public Class<? extends Scheduler> getScheduler() {
-        return NSpigotScheduler.class;
+    public void unschedule(Task task) {
+        scheduler.cancel(task.getTaskId());
+        task.setTaskId(-1);
     }
 
     @Override
-    public Class<? extends UserManager> getUserManager() {
-        return SpigotUserManager.class;
+    public void sync(Runnable runnable) {
+        scheduler.runAsync(plugin, runnable);
     }
 
     @Override
-    public Class<? extends SynchronizerFactory> getSynchronizerFactory() {
-        return NSpigotSynchronizerFactory.class;
+    public void async(Runnable runnable) {
+        scheduler.runAsync(plugin, runnable);
+    }
+
+    @Override
+    public void delay(int ticks, Runnable runnable) {
+        scheduler.schedule(plugin, runnable, 50 * ticks, TimeUnit.MILLISECONDS);
     }
 }

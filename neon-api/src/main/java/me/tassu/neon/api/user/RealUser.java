@@ -36,4 +36,11 @@ public interface RealUser extends User {
     default boolean isRealPlayer() {
         return true;
     }
+
+    /**
+     * Kicks this player, if online on this server.
+     * @param reason Reason to disconnect with.
+     */
+    void disconnect(String reason);
+
 }

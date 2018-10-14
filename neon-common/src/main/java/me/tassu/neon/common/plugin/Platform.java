@@ -57,4 +57,6 @@ public interface Platform {
      */
     boolean isAsync();
 
+    void broadcast(String message);
+
 }

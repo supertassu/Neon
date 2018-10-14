@@ -74,6 +74,7 @@ public class NSpigotScheduler implements Scheduler {
         }
 
         scheduler.cancelTask(task.getTaskId());
+        task.setTaskId(-1);
     }
 
     @Override

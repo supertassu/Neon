@@ -23,44 +23,29 @@
  * SOFTWARE.
  */
 
-package me.tassu.neon.spigot.user;
+package me.tassu.neon.bungee;
 
-import me.tassu.neon.common.db.StorageConnector;
-import me.tassu.neon.common.scheduler.Scheduler;
-import me.tassu.neon.common.sync.Synchronizer;
-import me.tassu.neon.common.user.AbstractRealUser;
-import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
+import com.google.inject.AbstractModule;
+import lombok.AllArgsConstructor;
+import me.tassu.util.config.ConfigFactory;
+import net.md_5.bungee.api.ProxyServer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.util.UUID;
+import java.net.URLClassLoader;
 
-import static me.tassu.neon.common.util.ChatColor.color;
+@AllArgsConstructor
+public class BungeeModule extends AbstractModule {
 
-public class SpigotRealUser extends AbstractRealUser {
-
-    SpigotRealUser(StorageConnector connector, Scheduler scheduler, Synchronizer synchronizer, UUID uuid) {
-        super(connector, scheduler, synchronizer, uuid, Bukkit.getPlayer(uuid) == null ? null : Bukkit.getPlayer(uuid).getName());
-
-        if (this.getName() == null) {
-            scheduler.delay(25, () -> {
-                if (Bukkit.getPlayer(uuid) != null) {
-                    this.setName(Bukkit.getPlayer(uuid).getName());
-                }
-            });
-        }
-    }
+    private NBungeeBootstrap plugin;
 
     @Override
-    public void kick(String reason) {
-        scheduler.sync(() -> bukkit().getPlayer().kickPlayer(color(reason)));
-    }
+    protected void configure() {
+        bind(ProxyServer.class).toInstance(ProxyServer.getInstance());
 
-    private OfflinePlayer bukkit() {
-        return Bukkit.getOfflinePlayer(getUuid());
-    }
-
-    @Override
-    public boolean isOnline() {
-        return bukkit().isOnline();
+        bind(NBungeeBootstrap.class).toInstance(plugin);
+        bind(ConfigFactory.class).toInstance(new ConfigFactory(plugin.getDataFolder().toPath()));
+        bind(URLClassLoader.class).toInstance((URLClassLoader) plugin.getClass().getClassLoader());
+        bind(Logger.class).toInstance(LoggerFactory.getLogger(plugin.getLogger().getName()));
     }
 }

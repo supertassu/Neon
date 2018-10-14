@@ -31,22 +31,23 @@ import com.google.common.cache.LoadingCache;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import me.tassu.neon.api.user.User;
-import me.tassu.neon.api.user.UserManager;
 import me.tassu.neon.common.db.StorageConnector;
 import me.tassu.neon.common.scheduler.Scheduler;
+import me.tassu.neon.common.sync.Synchronizer;
+import me.tassu.neon.common.user.AbstractUserManager;
 import me.tassu.neon.common.user.FakeUser;
 import org.bukkit.Bukkit;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.time.Duration;
 import java.util.UUID;
 
 @Singleton
-public class SpigotUserManager implements UserManager {
+public class SpigotUserManager extends AbstractUserManager {
 
     @Inject private StorageConnector connector;
     @Inject private Scheduler scheduler;
+    @Inject private Synchronizer synchronizer;
 
     private LoadingCache<UUID, SpigotRealUser> cache = CacheBuilder.newBuilder()
             .maximumSize(Bukkit.getMaxPlayers())
@@ -55,20 +56,20 @@ public class SpigotUserManager implements UserManager {
             .build(new CacheLoader<UUID, SpigotRealUser>() {
                 @Override
                 public SpigotRealUser load(@NonNull UUID key) {
-                    return new SpigotRealUser(connector, scheduler, key);
+                    return new SpigotRealUser(connector, scheduler, synchronizer, key);
                 }
             });
 
     private FakeUser console = new FakeUser();
 
-    @Override
-    public @NonNull User getConsoleUser() {
-        return console;
+    @Inject
+    public SpigotUserManager(StorageConnector connector) {
+        super(connector);
     }
 
     @Override
-    public @Nullable User getUser(@NonNull String name) {
-        return null;
+    public @NonNull User getConsoleUser() {
+        return console;
     }
 
     @Override

@@ -23,44 +23,26 @@
  * SOFTWARE.
  */
 
-package me.tassu.neon.spigot.user;
+package me.tassu.neon.bungee;
 
-import me.tassu.neon.common.db.StorageConnector;
-import me.tassu.neon.common.scheduler.Scheduler;
-import me.tassu.neon.common.sync.Synchronizer;
-import me.tassu.neon.common.user.AbstractRealUser;
-import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
+import me.tassu.neon.common.plugin.NeonPlugin;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
-import java.util.UUID;
+import java.io.InputStream;
 
-import static me.tassu.neon.common.util.ChatColor.color;
+public class NBungeePlugin extends NeonPlugin {
 
-public class SpigotRealUser extends AbstractRealUser {
+    private NBungeeBootstrap plugin;
 
-    SpigotRealUser(StorageConnector connector, Scheduler scheduler, Synchronizer synchronizer, UUID uuid) {
-        super(connector, scheduler, synchronizer, uuid, Bukkit.getPlayer(uuid) == null ? null : Bukkit.getPlayer(uuid).getName());
-
-        if (this.getName() == null) {
-            scheduler.delay(25, () -> {
-                if (Bukkit.getPlayer(uuid) != null) {
-                    this.setName(Bukkit.getPlayer(uuid).getName());
-                }
-            });
-        }
+    public NBungeePlugin(@NonNull NBungeeBootstrap bootstrap) {
+        super(bootstrap);
+        this.plugin = bootstrap;
     }
 
     @Override
-    public void kick(String reason) {
-        scheduler.sync(() -> bukkit().getPlayer().kickPlayer(color(reason)));
-    }
-
-    private OfflinePlayer bukkit() {
-        return Bukkit.getOfflinePlayer(getUuid());
-    }
-
-    @Override
-    public boolean isOnline() {
-        return bukkit().isOnline();
+    @Nullable
+    public InputStream getResourceStream(@NonNull String path) {
+        return plugin.getResourceAsStream(path);
     }
 }

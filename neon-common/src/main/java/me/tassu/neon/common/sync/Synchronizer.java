@@ -23,44 +23,46 @@
  * SOFTWARE.
  */
 
-package me.tassu.neon.spigot.user;
+package me.tassu.neon.common.sync;
 
-import me.tassu.neon.common.db.StorageConnector;
-import me.tassu.neon.common.scheduler.Scheduler;
-import me.tassu.neon.common.sync.Synchronizer;
-import me.tassu.neon.common.user.AbstractRealUser;
-import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+import me.tassu.neon.common.config.NeonConfig;
 
 import java.util.UUID;
 
-import static me.tassu.neon.common.util.ChatColor.color;
+@Singleton
+public class Synchronizer {
 
-public class SpigotRealUser extends AbstractRealUser {
+    @Inject private SynchronizerFactory factory;
+    @Inject private NeonConfig config;
 
-    SpigotRealUser(StorageConnector connector, Scheduler scheduler, Synchronizer synchronizer, UUID uuid) {
-        super(connector, scheduler, synchronizer, uuid, Bukkit.getPlayer(uuid) == null ? null : Bukkit.getPlayer(uuid).getName());
+    private ISynchronizer impl;
 
-        if (this.getName() == null) {
-            scheduler.delay(25, () -> {
-                if (Bukkit.getPlayer(uuid) != null) {
-                    this.setName(Bukkit.getPlayer(uuid).getName());
-                }
-            });
+    public void setup() {
+        close();
+
+        if (config.getConfig().isEnableBungeeSync()) {
+            impl = factory.getBungeeSynchronizer();
+            impl.open();
+        } else {
+            impl = null;
         }
     }
 
-    @Override
-    public void kick(String reason) {
-        scheduler.sync(() -> bukkit().getPlayer().kickPlayer(color(reason)));
+    public void close() {
+        if (impl != null) impl.close();
     }
 
-    private OfflinePlayer bukkit() {
-        return Bukkit.getOfflinePlayer(getUuid());
+    public boolean isAvailable() {
+        return impl != null;
     }
 
-    @Override
-    public boolean isOnline() {
-        return bukkit().isOnline();
+    public void sync(UUID uuid) {
+        if (isAvailable()) impl.sync(uuid);
+    }
+
+    public void broadcast(long id) {
+        if (isAvailable()) impl.broadcast(id);
     }
 }

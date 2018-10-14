@@ -58,6 +58,9 @@ public class NeonConfig extends AbstractConfig<NeonConfig> {
     public static class Config {
         @Setting("storage") @Getter
         private StorageConfig storageConfig = new StorageConfig();
+
+        @Setting("enable-bungee-sync") @Getter
+        private boolean enableBungeeSync = true;
     }
 
     @Getter @Setting("neon")

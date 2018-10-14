@@ -31,20 +31,35 @@ import me.tassu.neon.api.punishment.Punishment;
 import me.tassu.neon.api.punishment.PunishmentManager;
 import me.tassu.neon.api.punishment.PunishmentType;
 import me.tassu.neon.api.punishment.SimplePunishmentType;
+import me.tassu.neon.api.user.RealUser;
 import me.tassu.neon.api.user.User;
 import me.tassu.neon.api.user.UserManager;
 import me.tassu.neon.common.db.Schema;
 import me.tassu.neon.common.db.StorageConnector;
+import me.tassu.neon.common.plugin.Platform;
+import me.tassu.neon.common.sync.Synchronizer;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
+import static me.tassu.neon.common.util.ChatColor.color;
+
 public class SimplePunishmentManager implements PunishmentManager {
 
+    @Inject private PunishmentHandler handler;
     @Inject private StorageConnector connector;
+    @Inject private Synchronizer synchronizer;
     @Inject private UserManager manager;
+    @Inject private Platform platform;
+
+    @Override
+    public @Nullable Punishment getPunishmentById(long id) {
+        throw new UnsupportedOperationException("Not implemented yet.");
+    }
 
     @Override
     public Set<Punishment> getActivePunishments(User user) {
@@ -71,21 +86,54 @@ public class SimplePunishmentManager implements PunishmentManager {
     }
 
     @Override
-    public Punishment createPunishment(User target, User actor, long expiry, String reason, PunishmentType type) {
+    public Punishment createPunishment(RealUser target, User actor, long expiry, String reason, PunishmentType type) {
         try (val connection = connector.getFactory().getConnection()) {
-            try (val statement = connection.prepareStatement(connector.getStatementProcessor().apply(Schema.ADD_PUNISHMENT))) {
+            try (val statement = connection.prepareStatement(connector.getStatementProcessor().apply(Schema.ADD_PUNISHMENT), Statement.RETURN_GENERATED_KEYS)) {
                 statement.setString(1, actor.getUuid().toString());
                 statement.setString(2, target.getUuid().toString());
                 statement.setString(3, type.getId());
                 statement.setString(4, reason);
                 statement.setLong(5, System.currentTimeMillis());
                 statement.setLong(6, expiry);
-                statement.execute();
-            }
+                if (statement.executeUpdate() == 0) {
+                    throw new SQLException("No rows affected.");
+                }
 
-            return new SimplePunishment(target, actor, type, System.currentTimeMillis(), expiry, reason);
+                val punishment = new SimplePunishment(target, actor, type, System.currentTimeMillis(), expiry, reason);
+
+                try (val generatedKeys = statement.getGeneratedKeys()) {
+                    if (generatedKeys.next()) {
+                        val id = generatedKeys.getLong(1);
+
+                        if (type.shouldKick() || (type.shouldPreventJoin() && target.isOnline())) {
+                            target.disconnect(handler.getKickMessage(punishment));
+                            broadcast(punishment, id);
+                        } else if (type.shouldPreventJoin()) {
+                            broadcast(punishment, id);
+                            synchronizer.sync(target.getUuid());
+                        }
+                    }
+                    else {
+                        throw new SQLException("Creating punishment failed failed, no ID obtained.");
+                    }
+                }
+
+                return punishment;
+            }
         } catch (SQLException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    public void broadcast(Punishment punishment, long id) {
+        if (synchronizer.isAvailable()) {
+            synchronizer.broadcast(id);
+            return;
+        }
+
+        val broadcast = handler.getBroadcast(punishment);
+        for (String message : broadcast) {
+            platform.broadcast(message);
         }
     }
 

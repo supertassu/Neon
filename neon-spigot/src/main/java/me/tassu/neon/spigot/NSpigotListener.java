@@ -27,26 +27,38 @@ package me.tassu.neon.spigot;
 
 import com.google.inject.Inject;
 import lombok.val;
+import me.tassu.neon.api.punishment.PunishmentManager;
+import me.tassu.neon.api.punishment.SimplePunishmentType;
+import me.tassu.neon.api.user.RealUser;
+import me.tassu.neon.api.user.UserManager;
 import me.tassu.neon.common.punishment.PunishmentHandler;
-import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
+
+import static me.tassu.neon.common.util.ChatColor.color;
 
 public class NSpigotListener implements Listener {
 
+    @Inject private UserManager userManager;
+    @Inject private PunishmentManager punishmentManager;
+
     @Inject private PunishmentHandler handler;
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
+    public void temp(AsyncPlayerChatEvent event) {
+        punishmentManager.createPunishment((RealUser) userManager.getUser(event.getPlayer().getUniqueId()), userManager.getConsoleUser(),
+                System.currentTimeMillis() + 60000, "Debugging", SimplePunishmentType.BAN);
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onAsyncPlayerPreLogin(AsyncPlayerPreLoginEvent event) {
         val kick = handler.onJoin(event.getUniqueId());
         if (kick.isPresent()) {
             event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_BANNED);
             event.setKickMessage(color(kick.orElse("no")));
         }
-    }
-
-    private String color(String s) {
-        return ChatColor.translateAlternateColorCodes('&', s);
     }
 }

@@ -65,6 +65,6 @@ subprojects {
     }
 
     shadowJar {
-        archiveName = "neon-spigot-${project.version}.jar"
+        archiveName = "${project.name}-${project.version}.jar"
     }
 }

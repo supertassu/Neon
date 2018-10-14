@@ -27,40 +27,53 @@ package me.tassu.neon.bungee;
 
 import com.google.inject.AbstractModule;
 import me.tassu.neon.api.user.UserManager;
+import me.tassu.neon.bungee.sync.BungeeSynchronizerFactory;
+import me.tassu.neon.bungee.user.BungeeUserFactory;
 import me.tassu.neon.common.plugin.NeonBootstrap;
 import me.tassu.neon.common.plugin.Platform;
 import me.tassu.neon.common.scheduler.Scheduler;
+import me.tassu.neon.common.sync.SynchronizerFactory;
 import net.md_5.bungee.api.plugin.Plugin;
 
 public final class NBungeeBootstrap extends Plugin implements NeonBootstrap {
 
+    private NBungeePlugin plugin;
+
     @Override
     public void onEnable() {
-        // Plugin startup logic
+        plugin = new NBungeePlugin(this);
+        plugin.startup();
     }
 
     @Override
     public void onDisable() {
-        // Plugin shutdown logic
+        plugin.shutdown();
     }
 
     @Override
-    public Class<? extends Platform> getPlatformInfo() {
-        throw new UnsupportedOperationException("Not implemented yet.");
+    public Class<? extends Platform> getPlatform() {
+        return BungeePlatform.class;
     }
 
     @Override
     public Class<? extends Scheduler> getScheduler() {
-        throw new UnsupportedOperationException("Not implemented yet.");
+        return NBungeeScheduler.class;
     }
 
     @Override
     public Class<? extends UserManager> getUserManager() {
-        throw new UnsupportedOperationException("Not implemented yet.");
+        return BungeeUserFactory.class;
+    }
+
+    @Override
+    public Class<? extends SynchronizerFactory> getSynchronizerFactory() {
+        return BungeeSynchronizerFactory.class;
     }
 
     @Override
     public AbstractModule[] getPlatformSpecificModules() {
-        throw new UnsupportedOperationException("Not implemented yet.");
+        return new AbstractModule[] {
+                new BungeeModule(this)
+        };
     }
 }

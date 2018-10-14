@@ -30,14 +30,16 @@ import me.tassu.neon.api.punishment.PunishmentManager;
 import me.tassu.neon.api.user.UserManager;
 import me.tassu.neon.common.punishment.SimplePunishmentManager;
 import me.tassu.neon.common.scheduler.Scheduler;
+import me.tassu.neon.common.sync.SynchronizerFactory;
 
 /**
  * Class handling the startup of the
  */
 public interface NeonBootstrap {
 
-    Class<? extends Platform> getPlatformInfo();
+    Class<? extends Platform> getPlatform();
     Class<? extends Scheduler> getScheduler();
+    Class<? extends SynchronizerFactory> getSynchronizerFactory();
 
     default Class<? extends PunishmentManager> getPunishmentManager() {
         return SimplePunishmentManager.class;
@@ -48,6 +50,7 @@ public interface NeonBootstrap {
     /**
      * Should provide at least:
      *  - ConfigFactory
+     *  - Logger
      *  - PluginClassLoader
      *
      * @return a set of modules

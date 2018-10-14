@@ -73,7 +73,7 @@ public class StorageConnector {
 
     public void init() {
         run(() -> {
-            if (!tableExists("{prefix}_players")) {
+            if (!tableExists("{prefix}_punishments")) {
                 try (val is = plugin.getResourceStream("schemas/" + factory.getImplementationName().toLowerCase() + ".schema")) {
                     if (is == null) {
                         throw new Exception("Couldn't locate schema file for " + factory.getImplementationName());

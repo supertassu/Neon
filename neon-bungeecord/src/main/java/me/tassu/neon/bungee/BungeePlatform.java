@@ -23,44 +23,43 @@
  * SOFTWARE.
  */
 
-package me.tassu.neon.spigot.user;
+package me.tassu.neon.bungee;
 
-import me.tassu.neon.common.db.StorageConnector;
-import me.tassu.neon.common.scheduler.Scheduler;
-import me.tassu.neon.common.sync.Synchronizer;
-import me.tassu.neon.common.user.AbstractRealUser;
-import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
-
-import java.util.UUID;
+import com.google.inject.Inject;
+import me.tassu.neon.common.plugin.Platform;
+import net.md_5.bungee.api.ProxyServer;
+import net.md_5.bungee.api.chat.TextComponent;
 
 import static me.tassu.neon.common.util.ChatColor.color;
 
-public class SpigotRealUser extends AbstractRealUser {
+public class BungeePlatform implements Platform {
 
-    SpigotRealUser(StorageConnector connector, Scheduler scheduler, Synchronizer synchronizer, UUID uuid) {
-        super(connector, scheduler, synchronizer, uuid, Bukkit.getPlayer(uuid) == null ? null : Bukkit.getPlayer(uuid).getName());
+    @Inject
+    private NBungeeBootstrap plugin;
 
-        if (this.getName() == null) {
-            scheduler.delay(25, () -> {
-                if (Bukkit.getPlayer(uuid) != null) {
-                    this.setName(Bukkit.getPlayer(uuid).getName());
-                }
-            });
-        }
+    @Override
+    public String getPluginVersion() {
+        return plugin.getDescription().getVersion();
     }
 
     @Override
-    public void kick(String reason) {
-        scheduler.sync(() -> bukkit().getPlayer().kickPlayer(color(reason)));
-    }
-
-    private OfflinePlayer bukkit() {
-        return Bukkit.getOfflinePlayer(getUuid());
+    public String getPlatformName() {
+        return ProxyServer.getInstance().getName();
     }
 
     @Override
-    public boolean isOnline() {
-        return bukkit().isOnline();
+    public String getPlatformVersion() {
+        return ProxyServer.getInstance().getVersion();
     }
+
+    @Override
+    public void broadcast(String message) {
+        ProxyServer.getInstance().broadcast(TextComponent.fromLegacyText(color(message)));
+    }
+
+    @Override
+    public boolean isAsync() {
+        return !Thread.currentThread().getName().equals("main");
+    }
+
 }
