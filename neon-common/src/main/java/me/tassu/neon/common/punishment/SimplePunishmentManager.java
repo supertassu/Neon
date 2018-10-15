@@ -141,7 +141,7 @@ public class SimplePunishmentManager implements PunishmentManager {
         }
     }
 
-    public void broadcast(Punishment punishment, long id) {
+    private void broadcast(Punishment punishment, long id) {
         if (synchronizer.isAvailable()) {
             synchronizer.broadcast(id);
             return;

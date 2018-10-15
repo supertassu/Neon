@@ -26,6 +26,7 @@
 package me.tassu.neon.common.user;
 
 import com.google.common.base.MoreObjects;
+import com.google.common.base.Preconditions;
 import lombok.val;
 import me.tassu.neon.api.user.RealUser;
 import me.tassu.neon.common.db.Schema;
@@ -35,6 +36,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.sql.SQLException;
+import java.util.Objects;
 import java.util.UUID;
 
 public abstract class AbstractRealUser implements RealUser {
@@ -42,7 +44,7 @@ public abstract class AbstractRealUser implements RealUser {
     protected Scheduler scheduler;
     private StorageConnector connector;
 
-    private UUID uuid;
+    private final UUID uuid;
     private String name = null;
 
     private void updateName(String name) {
@@ -61,7 +63,7 @@ public abstract class AbstractRealUser implements RealUser {
 
     protected abstract void kick(String reason);
 
-    public AbstractRealUser(StorageConnector connector, Scheduler scheduler, UUID uuid, String name) {
+    public AbstractRealUser(StorageConnector connector, Scheduler scheduler, @NonNull UUID uuid, @Nullable String name) {
         this.connector = connector;
         this.scheduler = scheduler;
 

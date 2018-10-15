@@ -28,6 +28,8 @@ package me.tassu.neon.common.sync;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import me.tassu.neon.common.config.NeonConfig;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.UUID;
 
@@ -58,7 +60,13 @@ public class Synchronizer {
         return impl != null;
     }
 
-    public void sync(UUID uuid) {
+    @Nullable
+    public String getImplementationName() {
+        if (isAvailable()) return impl.getImplementationName();
+        return null;
+    }
+
+    public void sync(@NonNull UUID uuid) {
         if (isAvailable()) impl.sync(uuid);
     }
 

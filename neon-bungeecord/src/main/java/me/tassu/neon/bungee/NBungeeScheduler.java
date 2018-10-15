@@ -36,7 +36,6 @@ import java.util.concurrent.TimeUnit;
 
 public class NBungeeScheduler implements Scheduler {
 
-    @Inject private Platform platform;
     @Inject private NBungeeBootstrap plugin;
 
     private TaskScheduler scheduler;
@@ -55,7 +54,7 @@ public class NBungeeScheduler implements Scheduler {
 
     @Override
     public boolean isScheduled(Task task) {
-        return false; // TODO
+        return task.getTaskId() != -1; // TODO
     }
 
     @Override

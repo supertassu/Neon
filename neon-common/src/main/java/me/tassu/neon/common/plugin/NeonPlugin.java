@@ -98,8 +98,6 @@ public abstract class NeonPlugin {
         logger.info("§4== §7Starting scheduler");
         scheduler.boot();
 
-        System.out.println(config.getConfig().getStorageConfig().getPassword());
-
         logger.info("§4== §7Connecting to database");
         connector.startup();
         if (getFactory() == null) {
@@ -123,8 +121,13 @@ public abstract class NeonPlugin {
         connector.init();
         logger.info("§4=== §7Database is good to go!");
 
-        logger.info("§4=== §7Starting synchronizer");
+        logger.info("§4== §7Starting synchronizer");
         synchronizer.setup();
+        if (synchronizer.isAvailable()) {
+            logger.info("§4=== §7Using " + synchronizer.getImplementationName() + " synchronizer.");
+        } else {
+            logger.info("§4=== §7No synchronizers available.");
+        }
 
         logger.info("§4= §7Neon should be good to go. Took §c" + (System.currentTimeMillis() - startTime) + "ms§7.");
     }

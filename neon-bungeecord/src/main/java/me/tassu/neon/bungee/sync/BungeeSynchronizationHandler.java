@@ -116,6 +116,7 @@ public class BungeeSynchronizationHandler implements ISynchronizer, Listener {
         val in = ByteStreams.newDataInput(data);
         val msg = in.readUTF();
 
+        logger.debug("Handling a " + msg + " BungeeSync packet.");
         switch (msg) {
             case "Sync":
                 val uuid = UUID.fromString(in.readUTF());
@@ -131,4 +132,8 @@ public class BungeeSynchronizationHandler implements ISynchronizer, Listener {
         }
     }
 
+    @Override
+    public String getImplementationName() {
+        return "BungeeCord";
+    }
 }

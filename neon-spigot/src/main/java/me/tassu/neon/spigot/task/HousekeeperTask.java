@@ -27,6 +27,7 @@ package me.tassu.neon.spigot.task;
 
 import com.google.inject.Inject;
 import me.tassu.neon.common.scheduler.Task;
+import me.tassu.neon.spigot.sync.SpigotBungeeSynchronizer;
 import me.tassu.neon.spigot.user.SpigotUserManager;
 import org.slf4j.Logger;
 
@@ -34,6 +35,7 @@ public class HousekeeperTask extends Task {
 
     @Inject private Logger logger;
     @Inject private SpigotUserManager userManager;
+    @Inject private SpigotBungeeSynchronizer synchronizer;
 
     public HousekeeperTask() {
         super(true, 600, 600);
@@ -42,5 +44,6 @@ public class HousekeeperTask extends Task {
     @Override
     public void run() {
         userManager.housekeep();
+        synchronizer.clearQueue();
     }
 }

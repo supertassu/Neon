@@ -31,6 +31,8 @@ public interface ISynchronizer {
     default void open() {}
     default void close() {}
 
+    String getImplementationName();
+
     void sync(UUID uuid);
     void broadcast(long id);
 }

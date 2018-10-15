@@ -123,4 +123,9 @@ public class SpigotBungeeSynchronizer implements ISynchronizer {
         player.sendPluginMessage(plugin, CHANNEL, message.getBytes());
     }
 
+    @Override
+    public String getImplementationName() {
+        return "BungeeCord";
+    }
+
 }

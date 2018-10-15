@@ -26,9 +26,6 @@
 package me.tassu.neon.spigot;
 
 import com.google.inject.Inject;
-import me.tassu.neon.api.punishment.PunishmentManager;
-import me.tassu.neon.api.punishment.SimplePunishmentType;
-import me.tassu.neon.api.user.UserManager;
 import me.tassu.neon.common.plugin.NeonPlugin;
 import me.tassu.neon.spigot.task.HousekeeperTask;
 import org.bukkit.plugin.PluginManager;
@@ -36,7 +33,6 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.io.InputStream;
-import java.util.UUID;
 
 public final class NSpigotPlugin extends NeonPlugin {
 
@@ -65,8 +61,6 @@ public final class NSpigotPlugin extends NeonPlugin {
 
         scheduler.schedule(housekeeper);
         manager.registerEvents(listener, plugin);
-
-        System.out.println();
     }
 
     @Override

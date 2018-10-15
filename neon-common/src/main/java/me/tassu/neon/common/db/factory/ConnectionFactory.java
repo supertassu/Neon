@@ -65,7 +65,6 @@ public abstract class ConnectionFactory {
         config.addDataSourceProperty("port", port);
         config.addDataSourceProperty("databaseName", this.config.getConfig().getStorageConfig().getDatabase());
 
-        System.out.println(this.config.getConfig().getStorageConfig().getPassword());
         config.setUsername(this.config.getConfig().getStorageConfig().getUsername());
         config.setPassword(this.config.getConfig().getStorageConfig().getPassword());
     }
