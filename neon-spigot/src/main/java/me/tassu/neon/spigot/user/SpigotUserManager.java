@@ -38,8 +38,8 @@ import me.tassu.neon.common.user.FakeUser;
 import org.bukkit.Bukkit;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
-import java.time.Duration;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 @Singleton
 public class SpigotUserManager extends AbstractUserManager {
@@ -50,7 +50,7 @@ public class SpigotUserManager extends AbstractUserManager {
     private LoadingCache<UUID, SpigotRealUser> cache = CacheBuilder.newBuilder()
             .maximumSize(Bukkit.getMaxPlayers())
             .weakKeys()
-            .expireAfterAccess(Duration.ofMinutes(15))
+            .expireAfterAccess(15, TimeUnit.MINUTES)
             .build(new CacheLoader<UUID, SpigotRealUser>() {
                 @Override
                 public SpigotRealUser load(@NonNull UUID key) {

@@ -84,7 +84,6 @@ public class SimplePunishmentManager implements PunishmentManager {
                     statement.setString(1, user.getUuid().toString());
                     try (val result = statement.executeQuery()) {
                         while (result.next()) {
-                            if (result.getInt("revoked") == 0) continue; // 0 == null
                             val punishment = new SimplePunishment(
                                     manager, user.getUuid(), UUID.fromString(result.getString("actor_uuid")), getTypeById(result.getString("type")),
                                     result.getLong("given"), result.getLong("expiration"), result.getString("reason")

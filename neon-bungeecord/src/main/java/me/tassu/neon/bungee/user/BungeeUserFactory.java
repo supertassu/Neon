@@ -36,8 +36,8 @@ import me.tassu.neon.common.user.AbstractUserManager;
 import me.tassu.neon.common.user.FakeUser;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
-import java.time.Duration;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 public class BungeeUserFactory extends AbstractUserManager {
 
@@ -46,7 +46,7 @@ public class BungeeUserFactory extends AbstractUserManager {
 
     private LoadingCache<UUID, BungeeRealUser> cache = CacheBuilder.newBuilder()
             .weakKeys()
-            .expireAfterAccess(Duration.ofMinutes(15))
+            .expireAfterAccess(15, TimeUnit.MINUTES)
             .build(new CacheLoader<UUID, BungeeRealUser>() {
                 @Override
                 public BungeeRealUser load(@NonNull UUID key) {
