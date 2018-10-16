@@ -22,6 +22,6 @@ CREATE TABLE IF NOT EXISTS `{prefix}_punishments` (
   `reason` VARCHAR(300) NULL DEFAULT NULL,
   `given` LONG NOT NULL,
   `expiration` LONG NOT NULL,
-  `revoked` INT NULL REFERENCES `{prefix}_log`(`id`),
+  `revoked` INT NOT NULL DEFAULT -1,
   PRIMARY KEY (`id`)
 ) DEFAULT CHARSET = utf8;

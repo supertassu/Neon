@@ -96,7 +96,7 @@ public class MessageConfig extends AbstractConfig<MessageConfig> {
 
         @Setting("kick.permanent")
         private Map<String, List<String>> permanentKickMessages = ImmutableMap.<String, List<String>>builder()
-                .put(SimplePunishmentType.BAN.getId(), Lists.newArrayList(
+                .put(SimplePunishmentType.BAN.getId(), Lists.newArrayList("",
                         "&8&m   &8[&r You are banned from this server! &8]&m   &r",
                         "",
                         "&6&lBanned by &7{{actor}}",
@@ -107,7 +107,7 @@ public class MessageConfig extends AbstractConfig<MessageConfig> {
 
         @Setting("kick.temp")
         private Map<String, List<String>> tempKickMessages = ImmutableMap.<String, List<String>>builder()
-                .put(SimplePunishmentType.BAN.getId(), Lists.newArrayList(
+                .put(SimplePunishmentType.BAN.getId(), Lists.newArrayList("",
                         "&8&m   &8[&r You are banned from this server! &8]&m   &r",
                         "",
                         "&6&lBanned by &7{{actor}}",
