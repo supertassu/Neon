@@ -32,6 +32,8 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.UUID;
 
+import static me.tassu.neon.common.util.ChatColor.color;
+
 public class FakeUser implements User {
 
     private UUID uuid;
@@ -72,5 +74,15 @@ public class FakeUser implements User {
                 .add("name", getName())
                 .add("isRealPlayer", isRealPlayer())
                 .toString();
+    }
+
+    @Override
+    public boolean hasPermission(String permission) {
+        return true;
+    }
+
+    @Override
+    public void sendMessage(String message) {
+        System.out.println(color(message)); // TODO
     }
 }

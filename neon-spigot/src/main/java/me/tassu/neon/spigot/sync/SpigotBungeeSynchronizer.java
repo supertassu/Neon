@@ -86,6 +86,11 @@ public class SpigotBungeeSynchronizer implements ISynchronizer {
         send("Broadcast", String.valueOf(id));
     }
 
+    @Override
+    public void kick(long id) {
+        send("Kick", String.valueOf(id));
+    }
+
     @Data
     @AllArgsConstructor(staticName = "of")
     private static class OutgoingMessage {

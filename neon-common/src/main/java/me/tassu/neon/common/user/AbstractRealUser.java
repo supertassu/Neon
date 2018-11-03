@@ -26,7 +26,6 @@
 package me.tassu.neon.common.user;
 
 import com.google.common.base.MoreObjects;
-import com.google.common.base.Preconditions;
 import lombok.val;
 import me.tassu.neon.api.user.RealUser;
 import me.tassu.neon.common.db.Schema;
@@ -36,7 +35,6 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.sql.SQLException;
-import java.util.Objects;
 import java.util.UUID;
 
 public abstract class AbstractRealUser implements RealUser {
@@ -54,6 +52,7 @@ public abstract class AbstractRealUser implements RealUser {
                     statement.setString(1, uuid.toString());
                     statement.setString(2, name);
                     statement.setString(3, name);
+                    statement.execute();
                 }
             } catch (SQLException e) {
                 throw new RuntimeException(e);
@@ -66,6 +65,7 @@ public abstract class AbstractRealUser implements RealUser {
     public AbstractRealUser(StorageConnector connector, Scheduler scheduler, @NonNull UUID uuid, @Nullable String name) {
         this.connector = connector;
         this.scheduler = scheduler;
+        this.uuid = uuid;
 
         if (name != null) {
             this.name = name;
@@ -86,8 +86,6 @@ public abstract class AbstractRealUser implements RealUser {
                 }
             });
         }
-
-        this.uuid = uuid;
     }
 
     @NonNull
@@ -108,10 +106,11 @@ public abstract class AbstractRealUser implements RealUser {
         }
     }
 
-    protected void setName(String name) {
-        val old = this.name;
-        this.name = name;
-        if (!name.equals(old)) updateName(name);
+    public void setName(@NonNull String name) {
+        if (!name.equals(this.name)) {
+            this.name = name;
+            updateName(name);
+        }
     }
 
     @Override

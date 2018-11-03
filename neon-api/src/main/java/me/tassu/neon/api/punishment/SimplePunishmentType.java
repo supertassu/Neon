@@ -45,6 +45,14 @@ public enum SimplePunishmentType implements PunishmentType {
     private boolean isRemovable;
     private boolean shouldKick;
 
+    public static PunishmentType match(String name) {
+        try {
+            return valueOf(name.toUpperCase());
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
     @Override
     public String getId() {
         return name();

@@ -23,50 +23,53 @@
  * SOFTWARE.
  */
 
-package me.tassu.neon.common.user;
+package me.tassu.neon.spigot.cmd;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import lombok.val;
-import me.tassu.neon.api.user.User;
 import me.tassu.neon.api.user.UserManager;
-import me.tassu.neon.common.db.Schema;
-import me.tassu.neon.common.db.StorageConnector;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import me.tassu.neon.common.command.meta.Command;
+import me.tassu.neon.common.command.meta.CommandManager;
+import org.bukkit.Bukkit;
+import org.bukkit.command.CommandMap;
 
-import java.sql.SQLException;
-import java.util.UUID;
+@Singleton
+public class SpigotCommandHandler {
 
-public abstract class AbstractUserManager implements UserManager {
+    @Inject
+    private UserManager userManager;
 
-    private StorageConnector connector;
+    @Inject
+    private CommandManager manager;
 
-    public AbstractUserManager(StorageConnector connector) {
-        this.connector = connector;
-    }
+    private CommandMap map;
 
-    @Override
-    public @Nullable User getUser(@NonNull String name) {
-        String uuid = null;
-
-        try (val connection = connector.getFactory().getConnection()) {
-            try (val statement = connection.prepareStatement(connector.getStatementProcessor().apply(Schema.SELECT_USER_BY_ANY))) {
-                statement.setString(1, name);
-                statement.setString(2, name);
-                try (val result = statement.executeQuery()) {
-                    if (result.next()) {
-                        uuid = result.getString("uuid");
-                    }
-                }
-            }
-        } catch (SQLException e) {
+    public void init() {
+        try {
+            prepare();
+        } catch (ReflectiveOperationException e) {
             throw new RuntimeException(e);
         }
 
-        if (uuid != null) {
-            return getUser(UUID.fromString(uuid));
-        }
-
-        return null;
+        manager.getCommands().stream()
+                .map(this::wrap)
+                .forEach(this::register);
     }
+
+    private void prepare() throws ReflectiveOperationException {
+        val mapField = Bukkit.getServer().getPluginManager().getClass().getDeclaredField("commandMap");
+        mapField.setAccessible(true);
+        map = (CommandMap) mapField.get(Bukkit.getServer().getPluginManager());
+    }
+
+    private void register(org.bukkit.command.Command command) {
+        map.register("neon", command);
+    }
+
+    private SpigotWrappedCommand wrap(Command command) {
+        return new SpigotWrappedCommand(command, userManager);
+    }
+
 
 }

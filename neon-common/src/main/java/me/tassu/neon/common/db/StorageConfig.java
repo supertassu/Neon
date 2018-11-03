@@ -48,8 +48,8 @@ public class StorageConfig {
     @Setting
     private String address = "localhost";
 
-    @Setting(comment = "The name of the database to store LuckPerms data in.\n" +
-            " - This must be created already. Don't worry about this setting if you're using MongoDB.")
+    @Setting(comment = "The name of the database to store Neon data in.\n" +
+            " - This must be created already.")
     private String database = "minecraft";
 
     @Setting

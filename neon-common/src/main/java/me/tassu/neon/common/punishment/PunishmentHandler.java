@@ -34,10 +34,8 @@ import me.tassu.neon.api.punishment.PunishmentManager;
 import me.tassu.neon.api.user.User;
 import me.tassu.neon.api.user.UserManager;
 import me.tassu.neon.common.config.MessageConfig;
-import me.tassu.neon.common.plugin.Platform;
 import me.tassu.neon.common.util.DurationFormatter;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -64,8 +62,8 @@ public class PunishmentHandler {
 
     public String getKickMessage(Punishment punishment) {
         val message = (punishment.willExpire()
-                ? locale.getLocale().getTempKickMessages()
-                : locale.getLocale().getPermanentKickMessages())
+                ? locale.getLocale().getKick().getTempKickMessages()
+                : locale.getLocale().getKick().getPermanentKickMessages())
                 .get(punishment.getType().getId());
         if (message == null) return null;
 

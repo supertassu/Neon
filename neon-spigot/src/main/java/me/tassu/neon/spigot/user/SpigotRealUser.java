@@ -62,4 +62,16 @@ public class SpigotRealUser extends AbstractRealUser {
     public boolean isOnline() {
         return bukkit().isOnline();
     }
+
+    @Override
+    public boolean hasPermission(String permission) {
+        if (!isOnline()) return false;
+        return bukkit().getPlayer().hasPermission(permission);
+    }
+
+    @Override
+    public void sendMessage(String message) {
+        if (!isOnline()) return;
+        scheduler.sync(() -> bukkit().getPlayer().sendMessage(color(message)));
+    }
 }

@@ -23,52 +23,16 @@
  * SOFTWARE.
  */
 
-package me.tassu.neon.api.user;
+package me.tassu.neon.common.command.meta;
 
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import me.tassu.neon.api.user.User;
 
-import java.util.UUID;
+import java.util.List;
 
-/**
- * Represents an user who may apply punishments to other users.
- */
-public interface User {
+public abstract class Command {
 
-    /**
-     * Gets the users unique ID
-     *
-     * @return the users Mojang assigned unique id
-     */
-    @NonNull
-    UUID getUuid();
+    public abstract String[] names();
 
-    /**
-     * Gets the users username
-     *
-     * <p>Returns null if no username is known for the user.</p>
-     *
-     * @return the users username
-     */
-    @Nullable
-    String getName();
+    public abstract void run(User sender, String label, List<String> args) throws Exception;
 
-    /**
-     * @return True if a real player, false otherwise
-     */
-    boolean isRealPlayer();
-
-    /**
-     * Checks if this user has a permission.
-     *
-     * @param permission Permission to check.
-     * @return True if user has permission, false otherwise
-     */
-    boolean hasPermission(String permission);
-
-    /**
-     * Sends a message to this user, if possible.
-     * @param message message to send.
-     */
-    void sendMessage(String message);
 }

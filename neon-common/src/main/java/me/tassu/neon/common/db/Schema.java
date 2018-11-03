@@ -29,6 +29,7 @@ public class Schema {
 
     public static final String SELECT_USER_BY_UUID = "SELECT uuid, username FROM {prefix}_players WHERE uuid=? LIMIT 1;";
     public static final String SELECT_USER_BY_NAME = "SELECT uuid, username FROM {prefix}_players WHERE username=? LIMIT 1;";
+    public static final String SELECT_USER_BY_ANY = "SELECT uuid, username FROM {prefix}_players WHERE username=? OR uuid=? LIMIT 1;";
 
     public static final String ADD_OR_UPDATE_USER =
             "INSERT INTO {prefix}_players (uuid, username) VALUES (?, ?) ON DUPLICATE KEY UPDATE username=?;";

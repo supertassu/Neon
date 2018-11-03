@@ -28,6 +28,7 @@ package me.tassu.neon.bungee.sync;
 import com.google.common.io.ByteStreams;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import lombok.experimental.var;
 import lombok.val;
 import me.tassu.neon.api.punishment.Punishment;
 import me.tassu.neon.api.punishment.PunishmentManager;
@@ -73,6 +74,15 @@ public class BungeeSynchronizationHandler implements ISynchronizer, Listener {
                     .stream().filter(it -> it.getType().shouldPreventJoin()).findAny();
             ban.ifPresent(punishment -> ((RealUser) user).disconnect(handler.getKickMessage(punishment)));
         });
+    }
+
+    @Override
+    public void kick(long id) {
+        val kick = punishmentManager.getPunishmentById(id);
+        if (kick == null) throw new RuntimeException("tried to kick but no kick was found");
+
+        val user = (RealUser) kick.getTarget();
+        user.disconnect(handler.getKickMessage(kick));
     }
 
     @Override
@@ -123,8 +133,12 @@ public class BungeeSynchronizationHandler implements ISynchronizer, Listener {
                 sync(uuid);
                 break;
             case "Broadcast":
-                val id = Integer.parseInt(in.readUTF());
+                var id = Integer.parseInt(in.readUTF());
                 broadcast(id);
+                break;
+            case "Kick":
+                id = Integer.parseInt(in.readUTF());
+                kick(id);
                 break;
             default:
                 logger.warn("Received a message in unknown channel: " + msg);

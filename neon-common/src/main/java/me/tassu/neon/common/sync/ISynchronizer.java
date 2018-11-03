@@ -34,5 +34,6 @@ public interface ISynchronizer {
     String getImplementationName();
 
     void sync(UUID uuid);
+    void kick(long id);
     void broadcast(long id);
 }

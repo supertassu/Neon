@@ -102,6 +102,10 @@ public class SimplePunishmentManager implements PunishmentManager {
 
     @Override
     public Punishment createPunishment(RealUser target, User actor, long expiry, String reason, PunishmentType type) {
+        if (expiry != -1 && !type.isRemovable()) {
+            throw new IllegalArgumentException("Non-removable punishments should not expire");
+        }
+
         try (val connection = connector.getFactory().getConnection()) {
             try (val statement = connection.prepareStatement(connector.getStatementProcessor().apply(Schema.ADD_PUNISHMENT), Statement.RETURN_GENERATED_KEYS)) {
                 statement.setString(1, actor.getUuid().toString());

@@ -27,6 +27,7 @@ package me.tassu.neon.spigot;
 
 import com.google.inject.Inject;
 import me.tassu.neon.common.plugin.NeonPlugin;
+import me.tassu.neon.spigot.cmd.SpigotCommandHandler;
 import me.tassu.neon.spigot.task.HousekeeperTask;
 import org.bukkit.plugin.PluginManager;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -38,10 +39,12 @@ public final class NSpigotPlugin extends NeonPlugin {
 
     @Inject private NSpigotBootstrap plugin;
     @Inject private NSpigotScheduler scheduler;
+
     @Inject private HousekeeperTask housekeeper;
 
     @Inject private PluginManager manager;
     @Inject private NSpigotListener listener;
+    @Inject private SpigotCommandHandler handler;
 
     public NSpigotPlugin(@NonNull NSpigotBootstrap bootstrap) {
         super(bootstrap);
@@ -61,6 +64,7 @@ public final class NSpigotPlugin extends NeonPlugin {
 
         scheduler.schedule(housekeeper);
         manager.registerEvents(listener, plugin);
+        handler.init();
     }
 
     @Override

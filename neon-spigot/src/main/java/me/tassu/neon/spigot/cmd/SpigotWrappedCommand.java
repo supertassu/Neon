@@ -23,50 +23,48 @@
  * SOFTWARE.
  */
 
-package me.tassu.neon.common.user;
+package me.tassu.neon.spigot.cmd;
 
+import com.google.common.collect.Lists;
 import lombok.val;
-import me.tassu.neon.api.user.User;
 import me.tassu.neon.api.user.UserManager;
-import me.tassu.neon.common.db.Schema;
-import me.tassu.neon.common.db.StorageConnector;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import me.tassu.neon.common.command.meta.Command;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
-import java.sql.SQLException;
-import java.util.UUID;
+import java.util.Arrays;
+import java.util.List;
 
-public abstract class AbstractUserManager implements UserManager {
+public class SpigotWrappedCommand extends org.bukkit.command.Command {
 
-    private StorageConnector connector;
+    private UserManager manager;
+    private Command command;
 
-    public AbstractUserManager(StorageConnector connector) {
-        this.connector = connector;
+    protected SpigotWrappedCommand(Command command, UserManager userManager) {
+        super(command.names()[0]);
+        this.command = command;
+        this.manager = userManager;
+
+        this.setAliases(Arrays.asList(command.names()));
     }
 
     @Override
-    public @Nullable User getUser(@NonNull String name) {
-        String uuid = null;
+    public boolean execute(CommandSender bukkitSender, String commandLabel, String[] args) {
+        val sender = bukkitSender instanceof Player
+                ? manager.getUser(((Player) bukkitSender).getUniqueId())
+                : manager.getConsoleUser();
 
-        try (val connection = connector.getFactory().getConnection()) {
-            try (val statement = connection.prepareStatement(connector.getStatementProcessor().apply(Schema.SELECT_USER_BY_ANY))) {
-                statement.setString(1, name);
-                statement.setString(2, name);
-                try (val result = statement.executeQuery()) {
-                    if (result.next()) {
-                        uuid = result.getString("uuid");
-                    }
-                }
-            }
-        } catch (SQLException e) {
+        try {
+            command.run(sender, commandLabel, Arrays.asList(args));
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
 
-        if (uuid != null) {
-            return getUser(UUID.fromString(uuid));
-        }
-
-        return null;
+        return true;
     }
 
+    @Override
+    public List<String> tabComplete(CommandSender sender, String alias, String[] args) throws IllegalArgumentException {
+        return Lists.newArrayList(); // TODO
+    }
 }

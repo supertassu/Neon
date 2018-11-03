@@ -23,52 +23,20 @@
  * SOFTWARE.
  */
 
-package me.tassu.neon.api.user;
+package me.tassu.neon.common.util;
 
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.junit.jupiter.api.Test;
 
-import java.util.UUID;
+import static me.tassu.neon.common.util.DurationParser.parse;
+import static org.junit.jupiter.api.Assertions.*;
 
-/**
- * Represents an user who may apply punishments to other users.
- */
-public interface User {
+class DurationParserTest {
 
-    /**
-     * Gets the users unique ID
-     *
-     * @return the users Mojang assigned unique id
-     */
-    @NonNull
-    UUID getUuid();
-
-    /**
-     * Gets the users username
-     *
-     * <p>Returns null if no username is known for the user.</p>
-     *
-     * @return the users username
-     */
-    @Nullable
-    String getName();
-
-    /**
-     * @return True if a real player, false otherwise
-     */
-    boolean isRealPlayer();
-
-    /**
-     * Checks if this user has a permission.
-     *
-     * @param permission Permission to check.
-     * @return True if user has permission, false otherwise
-     */
-    boolean hasPermission(String permission);
-
-    /**
-     * Sends a message to this user, if possible.
-     * @param message message to send.
-     */
-    void sendMessage(String message);
+    @Test
+    void testParse() {
+        assertEquals(1000, parse("1s"));
+        assertEquals(11000, parse("11s"));
+        assertEquals(61000, parse("1m1s"));
+        assertEquals(61000, parse("1m 1s"));
+    }
 }

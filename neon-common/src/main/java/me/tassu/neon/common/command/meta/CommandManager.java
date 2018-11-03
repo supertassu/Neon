@@ -23,58 +23,23 @@
  * SOFTWARE.
  */
 
-package me.tassu.neon.common.sync;
+package me.tassu.neon.common.command.meta;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import me.tassu.neon.common.config.NeonConfig;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import me.tassu.neon.common.command.PunishCommand;
 
-import java.util.UUID;
+import java.util.Collections;
+import java.util.List;
 
 @Singleton
-public class Synchronizer {
+public class CommandManager {
 
-    @Inject private SynchronizerFactory factory;
-    @Inject private NeonConfig config;
+    @Inject
+    private PunishCommand punishCommand;
 
-    private ISynchronizer impl;
-
-    public void setup() {
-        close();
-
-        if (config.getConfig().isEnableBungeeSync()) {
-            impl = factory.getBungeeSynchronizer();
-            impl.open();
-        } else {
-            impl = null;
-        }
+    public List<Command> getCommands() {
+        return Collections.singletonList(punishCommand);
     }
 
-    public void close() {
-        if (impl != null) impl.close();
-    }
-
-    public boolean isAvailable() {
-        return impl != null;
-    }
-
-    @Nullable
-    public String getImplementationName() {
-        if (isAvailable()) return impl.getImplementationName();
-        return null;
-    }
-
-    public void kick(long id) {
-        if (isAvailable()) impl.kick(id);
-    }
-
-    public void sync(@NonNull UUID uuid) {
-        if (isAvailable()) impl.sync(uuid);
-    }
-
-    public void broadcast(long id) {
-        if (isAvailable()) impl.broadcast(id);
-    }
 }

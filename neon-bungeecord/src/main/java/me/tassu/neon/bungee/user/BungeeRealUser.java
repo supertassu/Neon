@@ -56,4 +56,14 @@ public class BungeeRealUser extends AbstractRealUser {
         return server.getPlayer(getUuid()) != null;
     }
 
+    @Override
+    public boolean hasPermission(String permission) {
+        if (!isOnline()) return false;
+        return server.getPlayer(getUuid()).hasPermission(permission);
+    }
+
+    @Override
+    public void sendMessage(String message) {
+        server.getPlayer(getUuid()).sendMessage(TextComponent.fromLegacyText(color(message)));
+    }
 }

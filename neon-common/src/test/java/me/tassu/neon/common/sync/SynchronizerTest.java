@@ -75,6 +75,9 @@ class SynchronizerTest {
         public void broadcast(long id) {
             called.set(true);
         }
+
+        @Override
+        public void kick(long id) {}
     }
 
 }

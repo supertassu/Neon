@@ -31,6 +31,7 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import lombok.Getter;
 import me.tassu.neon.api.punishment.SimplePunishmentType;
+import me.tassu.neon.common.punishment.SimplePunishment;
 import me.tassu.util.config.AbstractConfig;
 import me.tassu.util.config.ConfigFactory;
 import ninja.leaping.configurate.objectmapping.ObjectMapper;
@@ -84,6 +85,8 @@ public class MessageConfig extends AbstractConfig<MessageConfig> {
             private Map<String, List<String>> permanentPunishmentMessages = ImmutableMap.<String, List<String>>builder()
                     .put(SimplePunishmentType.BAN.getId(), Lists.newArrayList(
                             "&e&m=&r &6&l{{target}}&7 was banned by &6&l{{actor}}&7 for &e{{reason}}&7."))
+                    .put(SimplePunishmentType.KICK.getId(), Lists.newArrayList(
+                            "&e&m=&r &6&l{{target}}&7 got kicked by &6&l{{actor}}&7 for &e{{reason}}&7."))
                     .build();
 
             @Setting("temp")
@@ -94,27 +97,49 @@ public class MessageConfig extends AbstractConfig<MessageConfig> {
                     .build();
         }
 
-        @Setting("kick.permanent")
-        private Map<String, List<String>> permanentKickMessages = ImmutableMap.<String, List<String>>builder()
-                .put(SimplePunishmentType.BAN.getId(), Lists.newArrayList("",
-                        "&8&m   &8[&r You are banned from this server! &8]&m   &r",
-                        "",
-                        "&6&lBanned by &7{{actor}}",
-                        "&6&lReason: &7{{reason}}",
-                        "&7This ban will not expire.", "",
-                        "&7You may &6appeal&7 at&r www.example.com/appeal&7."))
-                .build();
+        @Setting
+        private Kick kick = new Kick();
 
-        @Setting("kick.temp")
-        private Map<String, List<String>> tempKickMessages = ImmutableMap.<String, List<String>>builder()
-                .put(SimplePunishmentType.BAN.getId(), Lists.newArrayList("",
-                        "&8&m   &8[&r You are banned from this server! &8]&m   &r",
-                        "",
-                        "&6&lBanned by &7{{actor}}",
-                        "&6&lReason: &7{{reason}}",
-                        "&6&lExpires in &7{{expires}}.", "",
-                        "&7You may &6appeal&7 at&r www.example.com/appeal&7."))
-                .build();
+        @ConfigSerializable
+        @Getter
+        public static class Kick {
+            @Setting("permanent")
+            private Map<String, List<String>> permanentKickMessages = ImmutableMap.<String, List<String>>builder()
+                    .put(SimplePunishmentType.BAN.getId(), Lists.newArrayList("",
+                            "&8&m   &8[&r You are banned from this server! &8]&m   &r",
+                            "",
+                            "&6&lBanned by &7{{actor}}",
+                            "&6&lReason: &7{{reason}}",
+                            "&7This ban will not expire.", "",
+                            "&7You may &6appeal&7 at&r www.example.com/appeal&7."))
+                    .put(SimplePunishmentType.KICK.getId(), Lists.newArrayList("",
+                            "&8&m   &8[&r You got kicked from this server! &8]&m   &r",
+                            "",
+                            "&6&lKicked by &7{{actor}}",
+                            "&6&lReason: &7{{reason}}"))
+                    .build();
+
+            @Setting("temp")
+            private Map<String, List<String>> tempKickMessages = ImmutableMap.<String, List<String>>builder()
+                    .put(SimplePunishmentType.BAN.getId(), Lists.newArrayList("",
+                            "&8&m   &8[&r You are banned from this server! &8]&m   &r",
+                            "",
+                            "&6&lBanned by &7{{actor}}",
+                            "&6&lReason: &7{{reason}}",
+                            "&6&lExpires in &7{{expires}}.", "",
+                            "&7You may &6appeal&7 at&r www.example.com/appeal&7."))
+                    .build();
+        }
+
+        @Setting
+        private Command command = new Command();
+
+        @Getter
+        @ConfigSerializable
+        public class Command {
+            @Setting("permission")
+            private String permissionMessage = "&7You are missing permissions to execute this command!";
+        }
 
     }
 
