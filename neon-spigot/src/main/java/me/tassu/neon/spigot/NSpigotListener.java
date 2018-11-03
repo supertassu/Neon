@@ -61,7 +61,6 @@ public class NSpigotListener implements Listener {
     public void onPlayerJoin(PlayerJoinEvent event) {
         scheduler.delay(10, () -> {
             val user = (SpigotRealUser) userManager.getUser(event.getPlayer().getUniqueId());
-            System.out.println("Updating name: " + event.getPlayer().getName() + " : " + user.getName());
             user.setName(event.getPlayer().getName());
         });
     }

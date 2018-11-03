@@ -95,7 +95,7 @@ public class PunishCommand extends Command {
 
             if (!rawReason.isEmpty()) {
                 val parsed = parse(rawReason.get(0));
-                if (parsed != -1) {
+                if (parsed > 0) {
                     expires = System.currentTimeMillis() + parsed;
                     rawReason.remove(0);
                 }

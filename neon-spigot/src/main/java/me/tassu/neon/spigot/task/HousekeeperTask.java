@@ -33,7 +33,6 @@ import org.slf4j.Logger;
 
 public class HousekeeperTask extends Task {
 
-    @Inject private Logger logger;
     @Inject private SpigotUserManager userManager;
     @Inject private SpigotBungeeSynchronizer synchronizer;
 

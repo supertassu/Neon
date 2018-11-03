@@ -51,6 +51,10 @@ public class DurationParser {
                 time += unitAsMillis(unit) * Integer.valueOf(amount);
             }
 
+            if (time == 0) {
+                return -1;
+            }
+
             return time;
         }
 

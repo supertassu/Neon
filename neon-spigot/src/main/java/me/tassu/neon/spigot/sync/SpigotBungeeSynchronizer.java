@@ -61,6 +61,12 @@ public class SpigotBungeeSynchronizer implements ISynchronizer {
         //this.plugin.getServer().getMessenger().unregisterIncomingPluginChannel(this.plugin, CHANNEL);
         this.plugin.getServer().getMessenger().unregisterOutgoingPluginChannel(this.plugin, CHANNEL);
 
+        if (!plugin.isEnabled()) {
+            logger.warn(queue.size() + " BungeeSync packets were discarded because the plugin has been disabled.");
+            queue.clear();
+            return;
+        }
+
         if (!queue.isEmpty()) {
             while (!queue.isEmpty() && !Bukkit.getOnlinePlayers().isEmpty()) {
                 val message = queue.remove(0);
