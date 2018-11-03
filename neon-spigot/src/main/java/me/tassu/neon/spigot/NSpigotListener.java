@@ -27,9 +27,6 @@ package me.tassu.neon.spigot;
 
 import com.google.inject.Inject;
 import lombok.val;
-import me.tassu.neon.api.punishment.PunishmentManager;
-import me.tassu.neon.api.punishment.SimplePunishmentType;
-import me.tassu.neon.api.user.RealUser;
 import me.tassu.neon.api.user.UserManager;
 import me.tassu.neon.common.punishment.PunishmentHandler;
 import me.tassu.neon.common.scheduler.Scheduler;
@@ -37,7 +34,6 @@ import me.tassu.neon.spigot.user.SpigotRealUser;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 
@@ -46,16 +42,9 @@ import static me.tassu.neon.common.util.ChatColor.color;
 public class NSpigotListener implements Listener {
 
     @Inject private UserManager userManager;
-    @Inject private PunishmentManager punishmentManager;
     @Inject private Scheduler scheduler;
 
     @Inject private PunishmentHandler handler;
-
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
-    public void temp(AsyncPlayerChatEvent event) {
-        punishmentManager.createPunishment((RealUser) userManager.getUser(event.getPlayer().getUniqueId()), userManager.getConsoleUser(),
-                System.currentTimeMillis() + 60000, "Debugging", SimplePunishmentType.BAN);
-    }
 
     @EventHandler(ignoreCancelled = true)
     public void onPlayerJoin(PlayerJoinEvent event) {
