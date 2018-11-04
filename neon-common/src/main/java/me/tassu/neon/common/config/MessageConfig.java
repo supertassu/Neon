@@ -136,7 +136,7 @@ public class MessageConfig extends AbstractConfig<MessageConfig> {
 
         @Getter
         @ConfigSerializable
-        public class Command {
+        public static class Command {
             @Setting("permission")
             private String permissionMessage = "&7You are missing permissions to execute this command!";
         }

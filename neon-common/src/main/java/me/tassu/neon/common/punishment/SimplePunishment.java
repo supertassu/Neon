@@ -28,6 +28,7 @@ package me.tassu.neon.common.punishment;
 import com.google.common.base.MoreObjects;
 import lombok.Getter;
 import lombok.NonNull;
+import me.tassu.neon.api.log.LogEntry;
 import me.tassu.neon.api.punishment.Punishment;
 import me.tassu.neon.api.punishment.PunishmentType;
 import me.tassu.neon.api.user.User;
@@ -62,9 +63,9 @@ public class SimplePunishment implements Punishment {
     private User target, actor;
 
     @Override
-    public boolean hasExpired() {
-        if (expiryDate == -1) return false;
-        return System.currentTimeMillis() - expiryDate > 0;
+    public boolean isActive() {
+        if (expiryDate == -1) return true;
+        return System.currentTimeMillis() - expiryDate <= 0;
     }
 
     @Override
@@ -87,7 +88,12 @@ public class SimplePunishment implements Punishment {
                 .add("actor", actor)
                 .add("type", type)
                 .add("reason", reason)
-                .add("hasExpired", hasExpired())
+                .add("isActive", isActive())
                 .toString();
+    }
+
+    @Override
+    public @Nullable LogEntry getRevokeLog() {
+        return null;
     }
 }

@@ -27,7 +27,7 @@ package me.tassu.neon.api.punishment;
 
 public enum SimplePunishmentType implements PunishmentType {
 
-    BAN(true, false, true, false),
+    BAN(true, false, true, true),
     MUTE(false, true, true, false),
     KICK(false, false, false, true)
 

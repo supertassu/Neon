@@ -41,8 +41,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import static me.tassu.neon.common.util.ChatColor.color;
-
 public class SpigotBungeeSynchronizer implements ISynchronizer {
 
     private static final String CHANNEL = "neon:update";
@@ -61,7 +59,7 @@ public class SpigotBungeeSynchronizer implements ISynchronizer {
         //this.plugin.getServer().getMessenger().unregisterIncomingPluginChannel(this.plugin, CHANNEL);
         this.plugin.getServer().getMessenger().unregisterOutgoingPluginChannel(this.plugin, CHANNEL);
 
-        if (!plugin.isEnabled()) {
+        if (!plugin.isEnabled() && !queue.isEmpty()) {
             logger.warn(queue.size() + " BungeeSync packets were discarded because the plugin has been disabled.");
             queue.clear();
             return;

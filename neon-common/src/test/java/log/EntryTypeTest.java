@@ -23,11 +23,20 @@
  * SOFTWARE.
  */
 
-package me.tassu.neon.common.log;
+package log;
 
-public enum EntryType {
+import me.tassu.neon.api.log.EntryType;
+import org.junit.jupiter.api.Test;
 
-    PUNISH,
-    UNPUNISH
+import static org.junit.jupiter.api.Assertions.*;
+
+class EntryTypeTest {
+
+    @Test
+    void sanityCheck() {
+        for (EntryType type : EntryType.values()) {
+            assertTrue(type.name().length() <= 16, type.name() + " is too long");
+        }
+    }
 
 }

@@ -25,8 +25,25 @@
 
 package me.tassu.neon.common.log;
 
+import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import me.tassu.neon.api.log.EntryType;
+import me.tassu.neon.api.log.LogEntry;
+import me.tassu.neon.api.user.User;
+import me.tassu.neon.common.db.StorageConnector;
 
 @Singleton
 public class LogHandler {
+
+    @Inject
+    private StorageConnector connector;
+
+    public LogEntry record(User actor, User target, EntryType type) {
+        return null;
+    }
+
+    public LogEntry getById(int id) {
+        return null;
+    }
+
 }

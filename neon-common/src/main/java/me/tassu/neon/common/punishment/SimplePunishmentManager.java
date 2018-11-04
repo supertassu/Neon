@@ -89,7 +89,7 @@ public class SimplePunishmentManager implements PunishmentManager {
                                     result.getLong("given"), result.getLong("expiration"), result.getString("reason")
                             );
 
-                            if (!punishment.hasExpired()) data.add(punishment);
+                            if (punishment.isActive()) data.add(punishment);
                         }
                     }
                 }
@@ -126,10 +126,12 @@ public class SimplePunishmentManager implements PunishmentManager {
 
                         broadcast(punishment, id);
 
-                        if (type.shouldKick() || (type.shouldPreventJoin() && target.isOnline())) {
-                            target.disconnect(handler.getKickMessage(punishment));
-                        } else if (type.shouldPreventJoin()) {
-                            synchronizer.sync(target.getUuid());
+                        if (type.shouldKick()) {
+                            if (target.isOnline()) {
+                                target.disconnect(handler.getKickMessage(punishment));
+                            } else {
+                                synchronizer.sync(target.getUuid());
+                            }
                         }
                     }
                     else {

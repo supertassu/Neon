@@ -23,28 +23,20 @@
  * SOFTWARE.
  */
 
-package me.tassu.neon.api.punishment;
+package me.tassu.neon.api.log;
 
-import me.tassu.neon.api.log.LogEntry;
 import me.tassu.neon.api.user.User;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
 
-public interface Punishment {
+public interface LogEntry {
+
+    int getId();
+
+    long getDate();
+
+    @NonNull EntryType getType();
 
     @NonNull User getTarget();
     @NonNull User getActor();
-
-    @Nullable String getReason();
-
-    long getStartDate();
-    long getExpiryDate();
-
-    boolean isActive();
-    boolean willExpire();
-
-    @NonNull PunishmentType getType();
-
-    @Nullable LogEntry getRevokeLog();
 
 }

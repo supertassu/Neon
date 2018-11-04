@@ -36,6 +36,7 @@ import me.tassu.neon.api.user.UserManager;
 import me.tassu.neon.common.config.MessageConfig;
 import me.tassu.neon.common.util.DurationFormatter;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -75,7 +76,7 @@ public class PunishmentHandler {
                 ? locale.getLocale().getBroadcast().getTempPunishmentMessages()
                 : locale.getLocale().getBroadcast().getPermanentPunishmentMessages())
                 .get(punishment.getType().getId());
-        if (message == null) return null;
+        if (message == null) return Collections.singletonList("missing translation for " + (punishment.willExpire() ? "temp" : "perm") + " " + punishment.getType().getId());
 
         return message.stream().map(it -> formatMessage(it, punishment)).collect(Collectors.toList());
     }

@@ -35,7 +35,7 @@ public class DurationFormatter {
     private static final long MINUTE = TimeUnit.MINUTES.toMillis(1L);
 
     public static String getRemaining(long millis) {
-        if (millis < 0) return "none";
+        if (millis <= 0) return "none";
 
         Duration duration = Duration.ofMillis(millis);
 

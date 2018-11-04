@@ -23,28 +23,33 @@
  * SOFTWARE.
  */
 
-package me.tassu.neon.api.punishment;
+package me.tassu.neon.common.log;
 
+import lombok.Getter;
+import lombok.NonNull;
+import me.tassu.neon.api.log.EntryType;
 import me.tassu.neon.api.log.LogEntry;
 import me.tassu.neon.api.user.User;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
 
-public interface Punishment {
+public class SimpleLogEntry implements LogEntry {
 
-    @NonNull User getTarget();
-    @NonNull User getActor();
+    @Getter
+    private final int id;
 
-    @Nullable String getReason();
+    @Getter
+    private long date;
 
-    long getStartDate();
-    long getExpiryDate();
+    @Getter
+    private EntryType type;
 
-    boolean isActive();
-    boolean willExpire();
+    @Getter
+    private User target, actor;
 
-    @NonNull PunishmentType getType();
-
-    @Nullable LogEntry getRevokeLog();
-
+    public SimpleLogEntry(int id, long date, @NonNull EntryType type, @NonNull User target, @NonNull User actor) {
+        this.id = id;
+        this.date = date;
+        this.type = type;
+        this.target = target;
+        this.actor = actor;
+    }
 }
