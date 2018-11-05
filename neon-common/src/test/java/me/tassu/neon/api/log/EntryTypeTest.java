@@ -23,9 +23,8 @@
  * SOFTWARE.
  */
 
-package log;
+package me.tassu.neon.api.log;
 
-import me.tassu.neon.api.log.EntryType;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
